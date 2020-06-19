@@ -1,0 +1,910 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom"><title>John Mastro</title><link href="https://jbm.io/" rel="alternate"></link><link href="https://jbm.io/atom.xml" rel="self"></link><id>https://jbm.io/</id><updated>2018-05-08T19:15:00-07:00</updated><entry><title>Sky 0.0.7: Basic equality</title><link href="https://jbm.io/2018/05/sky-0-0-7.html" rel="alternate"></link><published>2018-05-08T14:10:00-07:00</published><updated>2018-05-08T19:15:00-07:00</updated><author><name>John Mastro</name></author><id>tag:jbm.io,2018-05-08:/2018/05/sky-0-0-7.html</id><summary type="html">&lt;p&gt;This is part of a series of posts about writing a simple interpreter for a small
+Lisp-like language. Please see &lt;a href="https://jbm.io/sky.html"&gt;here&lt;/a&gt; for an overview of the series.&lt;/p&gt;
+&lt;p&gt;&lt;a href="https://jbm.io/2018/04/sky-0-0-6.html"&gt;Last time&lt;/a&gt; we made all symbols readable. Now we&amp;rsquo;re going to start
+working towards a symbol table, and our first step is …&lt;/p&gt;</summary><content type="html">&lt;p&gt;This is part of a series of posts about writing a simple interpreter for a small
+Lisp-like language. Please see &lt;a href="https://jbm.io/sky.html"&gt;here&lt;/a&gt; for an overview of the series.&lt;/p&gt;
+&lt;p&gt;&lt;a href="https://jbm.io/2018/04/sky-0-0-6.html"&gt;Last time&lt;/a&gt; we made all symbols readable. Now we&amp;rsquo;re going to start
+working towards a symbol table, and our first step is to define &lt;code&gt;equal&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;You can see the code as of this post &lt;a href="https://github.com/johnmastro/sky/tree/sky-0.0.7"&gt;here&lt;/a&gt;, and a comparison against last
+time &lt;a href="https://github.com/johnmastro/sky/compare/sky-0.0.6...sky-0.0.7"&gt;here&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;There&amp;rsquo;s nothing especially interesting about &lt;code&gt;equal&lt;/code&gt;, so today I&amp;rsquo;ll mostly refer
+you to &lt;a href="https://github.com/johnmastro/sky/blob/sky-0.0.7/src/equal.c"&gt;&lt;code&gt;equal.c&lt;/code&gt; in the repository&lt;/a&gt;. For integers, characters, and
+symbols&lt;sup id="fnref:symbols"&gt;&lt;a class="footnote-ref" href="#fn:symbols"&gt;1&lt;/a&gt;&lt;/sup&gt;, we can defer to C&amp;rsquo;s equality operator (&lt;code&gt;==&lt;/code&gt;). For strings, we
+first compare their lengths (two strings of different length can&amp;rsquo;t be equal) and
+then defer to C&amp;rsquo;s &lt;code&gt;memcmp&lt;/code&gt; to compare their contents.&lt;/p&gt;
+&lt;p&gt;Lists are the most interesting case, because their contents are Sky values. If
+the two lists are &lt;code&gt;nil&lt;/code&gt;, they&amp;rsquo;re equal. If one is &lt;code&gt;nil&lt;/code&gt; and the other isn&amp;rsquo;t,
+they&amp;rsquo;re not equal. If the &lt;code&gt;first&lt;/code&gt; items of the two lists are not &lt;code&gt;equal&lt;/code&gt;, then
+the lists aren&amp;rsquo;t equal. Otherwise we repeat the process on the &lt;code&gt;rest&lt;/code&gt; of both
+lists until we reach a conclusion.&lt;/p&gt;
+&lt;p&gt;There are a number of things that would make for a more interesting &lt;code&gt;equal&lt;/code&gt;,
+like supporting an arbitrary number of arguments, comparing across multiple
+sequence types, comparisons involving floating point numbers, etc., but none of
+those are relevant for us yet, so we&amp;rsquo;re getting away with a very simple
+implementation.&lt;/p&gt;
+&lt;h2&gt;Next time&lt;/h2&gt;
+&lt;p&gt;Next time we&amp;rsquo;ll implement a hash function.&lt;/p&gt;
+&lt;div class="footnote"&gt;
+&lt;hr&gt;
+&lt;ol&gt;
+&lt;li id="fn:symbols"&gt;
+&lt;p&gt;Symbols are only considered equal if they&amp;rsquo;re pointer-equal, i.e. the exact
+same object in memory. This works by &lt;a href="https://en.wikipedia.org/wiki/String_interning"&gt;interning&lt;/a&gt; symbols, which requires a
+symbol table of some sort, which is what we&amp;rsquo;re working on now.&amp;#160;&lt;a class="footnote-backref" href="#fnref:symbols" title="Jump back to footnote 1 in the text"&gt;&amp;#8617;&amp;#xFE0E;&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/div&gt;</content><category term="05"></category></entry><entry><title>Sky 0.0.6: Making all symbols readable</title><link href="https://jbm.io/2018/04/sky-0-0-6.html" rel="alternate"></link><published>2018-04-28T14:02:00-07:00</published><updated>2018-04-28T14:02:00-07:00</updated><author><name>John Mastro</name></author><id>tag:jbm.io,2018-04-28:/2018/04/sky-0-0-6.html</id><summary type="html">&lt;p&gt;This is part of a series of posts about writing a simple interpreter for a small
+Lisp-like language. Please see &lt;a href="https://jbm.io/sky.html"&gt;here&lt;/a&gt; for an overview of the series.&lt;/p&gt;
+&lt;p&gt;&lt;a href="https://jbm.io/2018/04/sky-0-0-5.html"&gt;Last time&lt;/a&gt; we added a not-quite-REPL and some round-trip read/print
+tests. This time we&amp;rsquo;re going to address an issue I mentioned …&lt;/p&gt;</summary><content type="html">&lt;p&gt;This is part of a series of posts about writing a simple interpreter for a small
+Lisp-like language. Please see &lt;a href="https://jbm.io/sky.html"&gt;here&lt;/a&gt; for an overview of the series.&lt;/p&gt;
+&lt;p&gt;&lt;a href="https://jbm.io/2018/04/sky-0-0-5.html"&gt;Last time&lt;/a&gt; we added a not-quite-REPL and some round-trip read/print
+tests. This time we&amp;rsquo;re going to address an issue I mentioned at the end of the
+&lt;a href="https://jbm.io/2018/03/sky-0-0-3.html"&gt;post about printing&lt;/a&gt;: currently, some symbols are printed in such a
+way that it&amp;rsquo;s impossible for them to be read back in.&lt;/p&gt;
+&lt;p&gt;We could accept that as a limitation, just like we&amp;rsquo;re accepting lots of other
+limitations. However, this is easy to fix, so we&amp;rsquo;re going to do it now.&lt;/p&gt;
+&lt;p&gt;You can see the code as of this post &lt;a href="https://github.com/johnmastro/sky/tree/sky-0.0.6"&gt;here&lt;/a&gt;, and a comparison against last
+time &lt;a href="https://github.com/johnmastro/sky/compare/sky-0.0.5...sky-0.0.6"&gt;here&lt;/a&gt;.&lt;/p&gt;
+&lt;h2&gt;The problem&lt;/h2&gt;
+&lt;p&gt;To review the problem, every symbol has a name, which is a string. There are no
+restrictions on what strings can be the name of a symbol; even the empty string
+is a valid symbol name. And a symbol&amp;rsquo;s name determines how we print it. However,
+we need to take special care with some symbol names, because otherwise the
+result won&amp;rsquo;t be readable.&lt;/p&gt;
+&lt;p&gt;For example, consider a symbol with the name &lt;code&gt;"foo bar"&lt;/code&gt;. It will print as &lt;code&gt;foo
+bar&lt;/code&gt;, but &lt;code&gt;foo bar&lt;/code&gt; won&amp;rsquo;t be read back in as the symbol with the name &lt;code&gt;"foo
+bar"&lt;/code&gt; - instead, it will be read back in as two symbols, &lt;code&gt;foo&lt;/code&gt; and &lt;code&gt;bar&lt;/code&gt;.&lt;/p&gt;
+&lt;h2&gt;The solution&lt;/h2&gt;
+&lt;p&gt;If we don&amp;rsquo;t want to say &amp;ldquo;don&amp;rsquo;t do that&amp;rdquo;, the solution is to quote the symbol
+name somehow. We could pick special quote markers, but it would probably have to
+be a two-character sequence; something like &lt;code&gt;#|name here|#&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;Instead, we&amp;rsquo;ll use regular old &lt;code&gt;"&lt;/code&gt; as the quote character, and precede the value
+with a tag that tells the reader the following expression is a symbol. The
+result will be &lt;code&gt;#symbol "name here"&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;The syntax is inspired by &lt;a href="https://clojure.org/reference/reader#tagged_literals"&gt;Clojure&amp;rsquo;s tagged literals&lt;/a&gt;, though
+we&amp;rsquo;re using it purely for symbols for now. We may make our implementation more
+general in the future.&lt;/p&gt;
+&lt;h2&gt;The implementation&lt;/h2&gt;
+&lt;p&gt;There are a few different bits to the implementation. First of all, we need a
+way to identify symbols with names that require quoting:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;static bool quotename(value_t name, ptrdiff_t len)
+{
+    bool intlike = true;
+
+    if (len == 0) return true;
+
+    for (ptrdiff_t i = 0; i &amp;lt; len; i++) {
+        int c = string_ref(name, i);
+        if (c &amp;lt; '!'     // Control and whitespace characters
+            || c &amp;gt; '~'  // DEL
+            || c == '(' || c == ')'
+            || c == '"'
+            || c == ';'
+            || (i == 0 &amp;amp;&amp;amp; c == '#'))
+            return true;
+        if (intlike
+            &amp;amp;&amp;amp; !((i == 0 &amp;amp;&amp;amp; (c == '-' || c == '+'))
+                 || (c &amp;gt;= '0' &amp;amp;&amp;amp; c &amp;lt;= '9')))
+            intlike = false;
+    }
+
+    return intlike;
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;We then use that predicate when printing a symbol. If it returns true, we print
+&lt;code&gt;#symbol&lt;/code&gt;, and then print the symbol&amp;rsquo;s name as a string.&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;static void print_string_1(FILE *stream, value_t value, bool symbol)
+{
+    ptrdiff_t len = string_length(value);
+
+    if (symbol &amp;amp;&amp;amp; quotename(value, len)) {
+        fputs("#symbol ", stream);
+        symbol = false;
+    }
+
+    // ...
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Finally, when we read &lt;code&gt;#&lt;/code&gt;, we check whether it&amp;rsquo;s followed by &lt;code&gt;symbol&lt;/code&gt;. If it is,
+we read the next expression, verify that it&amp;rsquo;s a string, and construct the symbol
+with that name.&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;if (TOKEQ(buf, len, "symbol")) {
+    int flag;
+    value_t sexp = read_sexp(stream, 0, &amp;amp;flag);
+    // ...
+    if (get_type_tag(sexp) == TAG_STRING)
+        return make_symbol(sexp);
+    // ...
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;There are a few new tests to go along with this, although I wouldn&amp;rsquo;t be
+surprised at all if there are edge cases that aren&amp;rsquo;t handled appropriately.
+However, they should be easy to fix as they come up.&lt;/p&gt;
+&lt;h2&gt;Next time&lt;/h2&gt;
+&lt;p&gt;Next time we&amp;rsquo;ll start working on a symbol table, which will ultimately let us
+intern symbols.&lt;/p&gt;</content><category term="04"></category></entry><entry><title>Sky 0.0.5: A not-quite-REPL</title><link href="https://jbm.io/2018/04/sky-0-0-5.html" rel="alternate"></link><published>2018-04-27T14:02:00-07:00</published><updated>2018-04-27T14:02:00-07:00</updated><author><name>John Mastro</name></author><id>tag:jbm.io,2018-04-27:/2018/04/sky-0-0-5.html</id><summary type="html">&lt;p&gt;This is part of a series of posts about writing a simple interpreter for a small
+Lisp-like language. Please see &lt;a href="https://jbm.io/sky.html"&gt;here&lt;/a&gt; for an overview of the series.&lt;/p&gt;
+&lt;p&gt;&lt;a href="https://jbm.io/2018/04/sky-0-0-4.html"&gt;Last time&lt;/a&gt; we added the ability to read Sky data from a C stream.
+This time we&amp;rsquo;re doing something with a smaller …&lt;/p&gt;</summary><content type="html">&lt;p&gt;This is part of a series of posts about writing a simple interpreter for a small
+Lisp-like language. Please see &lt;a href="https://jbm.io/sky.html"&gt;here&lt;/a&gt; for an overview of the series.&lt;/p&gt;
+&lt;p&gt;&lt;a href="https://jbm.io/2018/04/sky-0-0-4.html"&gt;Last time&lt;/a&gt; we added the ability to read Sky data from a C stream.
+This time we&amp;rsquo;re doing something with a smaller scope: adding some tests for
+reading and printing, plus a note-quite-&lt;a href="https://en.wikipedia.org/wiki/Read-eval-print_loop"&gt;REPL&lt;/a&gt; (specifically, without the
+&amp;ldquo;eval&amp;rdquo; part).&lt;/p&gt;
+&lt;p&gt;You can see the code as of this post &lt;a href="https://github.com/johnmastro/sky/tree/sky-0.0.5"&gt;here&lt;/a&gt;, and a comparison against last
+time &lt;a href="https://github.com/johnmastro/sky/compare/sky-0.0.4...sky-0.0.5"&gt;here&lt;/a&gt;.&lt;/p&gt;
+&lt;h2&gt;The tests&lt;/h2&gt;
+&lt;p&gt;For the tests, we start with &lt;a href="https://github.com/johnmastro/sky/tree/sky-0.0.5/tst/data"&gt;a directory&lt;/a&gt; containing some valid examples
+of Sky data. Specifically, we have:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;A string containing every ASCII character&lt;/li&gt;
+&lt;li&gt;A list containing every ASCII character&lt;/li&gt;
+&lt;li&gt;The most-positive Sky integer (on 64-bit machines)&lt;/li&gt;
+&lt;li&gt;The least-positive Sky integer (on 64-bit machines)&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Then we have &lt;a href="https://github.com/johnmastro/sky/blob/sky-0.0.5/tst/run.sh"&gt;a script&lt;/a&gt; that checks whether &lt;code&gt;read&lt;/code&gt; and &lt;code&gt;print&lt;/code&gt; are
+consistent. For each of the test files, it uses the &lt;code&gt;sky&lt;/code&gt; binary to read the
+file and then print the data to a new file, and then uses &lt;code&gt;diff&lt;/code&gt; to check that
+the file we printed is byte-for-byte identical to the file we read. If it&amp;rsquo;s not,
+it exits with an error code.&lt;/p&gt;
+&lt;p&gt;The final piece of the puzzle is in the &lt;a href="https://github.com/johnmastro/sky/blob/sky-0.0.5/Makefile"&gt;makefile&lt;/a&gt;, which has a new &lt;code&gt;check&lt;/code&gt;
+rule:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;check:
+    @tst/run.sh || (echo "Tests failed" &amp;amp;&amp;amp; exit 1)
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;The end result is that we can run &lt;code&gt;make all check&lt;/code&gt;, which will build Sky and
+then test that reading and printing are working as we expect.&lt;/p&gt;
+&lt;p&gt;We could go a lot further with testing, but I&amp;rsquo;m keeping it minimal for now.
+Testing will be easier once we can test Sky in Sky itself.&lt;/p&gt;
+&lt;h2&gt;The not-quite-REPL&lt;/h2&gt;
+&lt;p&gt;The function to implement a REPL-minus-eval is very simple now that we have both
+the &lt;code&gt;read&lt;/code&gt; and &lt;code&gt;print&lt;/code&gt; parts:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;static void run_repl(void)
+{
+    value_t value;
+    bool eof = false;
+
+    fputs("Welcome to Sky. Use control-c to exit.\n", stdout);
+
+    for (;;) {
+        fprintf(stdout, "&amp;gt; ");
+        fflush(stdout);
+        value = read_from_stream(stdin, &amp;amp;eof);
+        if (eof) break;
+        println(stdout, value);
+    }
+
+    fputs("\nGoodbye\n", stdout);
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;The result is that we can interactively send expressions to Sky, which will read
+them and print them back. The important thing is that it&amp;rsquo;s not just echoing the
+text; the text is being read, resulting in Sky values, which are then printed.&lt;/p&gt;
+&lt;p&gt;Here&amp;rsquo;s a brief example session:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;~/code/sky/&amp;gt; ./src/sky
+Welcome to Sky. Use control-c to exit.
+&amp;gt; 1
+1
+&amp;gt; one
+one
+&amp;gt; "foo\nbar"
+"foo\nbar"
+&amp;gt; (#\a #\b #\c)
+(#\a #\b #\c)
+&amp;gt; ^C
+Goodbye
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;That&amp;rsquo;s all for this time.&lt;/p&gt;
+&lt;h2&gt;Next time&lt;/h2&gt;
+&lt;p&gt;Next time I think we&amp;rsquo;ll try to solve the problem I referenced &lt;a href="https://jbm.io/2018/03/sky-0-0-3.html"&gt;when discussing
+printing&lt;/a&gt;, which is that there are currently some symbols which can
+be printed but not read.&lt;/p&gt;</content><category term="04"></category></entry><entry><title>Sky 0.0.4: Reading data</title><link href="https://jbm.io/2018/04/sky-0-0-4.html" rel="alternate"></link><published>2018-04-26T15:25:00-07:00</published><updated>2018-04-27T14:15:00-07:00</updated><author><name>John Mastro</name></author><id>tag:jbm.io,2018-04-26:/2018/04/sky-0-0-4.html</id><summary type="html">&lt;p&gt;This is part of a series of posts about writing a simple interpreter for a small
+Lisp-like language. Please see &lt;a href="https://jbm.io/sky.html"&gt;here&lt;/a&gt; for an overview of the series.&lt;/p&gt;
+&lt;p&gt;&lt;a href="https://jbm.io/2018/03/sky-0-0-3.html"&gt;Last time&lt;/a&gt; we added the ability to print Sky data to a C stream.
+This time we&amp;rsquo;re adding the inverse, the ability …&lt;/p&gt;</summary><content type="html">&lt;p&gt;This is part of a series of posts about writing a simple interpreter for a small
+Lisp-like language. Please see &lt;a href="https://jbm.io/sky.html"&gt;here&lt;/a&gt; for an overview of the series.&lt;/p&gt;
+&lt;p&gt;&lt;a href="https://jbm.io/2018/03/sky-0-0-3.html"&gt;Last time&lt;/a&gt; we added the ability to print Sky data to a C stream.
+This time we&amp;rsquo;re adding the inverse, the ability to read Sky data from a C
+stream. The reader is the most complex component so far, with roughly three
+times as many lines of code as the printer.&lt;/p&gt;
+&lt;p&gt;You can see the code as of this post &lt;a href="https://github.com/johnmastro/sky/tree/sky-0.0.4"&gt;here&lt;/a&gt;, and a comparison against last
+time &lt;a href="https://github.com/johnmastro/sky/compare/sky-0.0.3...sky-0.0.4"&gt;here&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;For various reasons, I have less free time than I foresaw when I first started
+this series of posts. However, I don&amp;rsquo;t want to stop or pause the series, at
+least not until we&amp;rsquo;ve implemented a basic evaluator. Thus, in an attempt to keep
+things moving, I&amp;rsquo;m going to try to keep the posts relatively brief, perhaps
+skipping some things I would have liked to include.&lt;/p&gt;
+&lt;h2&gt;A brief overview&lt;/h2&gt;
+&lt;p&gt;At a high level &lt;code&gt;read.c&lt;/code&gt;, contains a few distinct groups of functions:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;read_next_char&lt;/code&gt;: takes a stream (&lt;code&gt;FILE *&lt;/code&gt;) argument, skips over whitespace and
+  comments, and returns the next character&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;read_token&lt;/code&gt;: takes a stream argument, fills a caller-provided fixed-size &lt;code&gt;char
+  *&lt;/code&gt; buffer, and returns an &lt;code&gt;int&lt;/code&gt; of how many bytes it read&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;isdelimiter&lt;/code&gt;: takes a character argument and returns &lt;code&gt;true&lt;/code&gt; if it&amp;rsquo;s a
+  delimiter. This is how &lt;code&gt;read_token&lt;/code&gt; knows it&amp;rsquo;s reached the end of a token&lt;/li&gt;
+&lt;li&gt;Functions whose names are prefixed with &lt;code&gt;read_&lt;/code&gt; (besides the two above): take
+  a stream argument and return a Sky value (&lt;code&gt;value_t&lt;/code&gt;)&lt;/li&gt;
+&lt;li&gt;Functions whose names are prefixed with &lt;code&gt;parse_&lt;/code&gt;: take a string (&lt;code&gt;const char
+  *&lt;/code&gt;) argument and return a C value&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;To give a very brief example of how these pieces fit together, when reading
+&lt;code&gt;#\newline&lt;/code&gt; (the character literal denoting a newline), the call flow would be:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;read_sexp&lt;/code&gt;&lt;sup id="fnref:sexp"&gt;&lt;a class="footnote-ref" href="#fn:sexp"&gt;1&lt;/a&gt;&lt;/sup&gt; is the main internal entry-point; it&amp;rsquo;s called for every
+  value read.&lt;/li&gt;
+&lt;li&gt;It calls &lt;code&gt;read_next_char&lt;/code&gt;, which returns &lt;code&gt;'#'&lt;/code&gt;. We then see that the next
+  character is &lt;code&gt;'\'&lt;/code&gt;, which tells us that we&amp;rsquo;re reading a character
+  literal&lt;sup id="fnref:dispatch"&gt;&lt;a class="footnote-ref" href="#fn:dispatch"&gt;2&lt;/a&gt;&lt;/sup&gt;&lt;/li&gt;
+&lt;li&gt;Thus, we call &lt;code&gt;read_character&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;It calls &lt;code&gt;read_token&lt;/code&gt;, which will fill a &lt;code&gt;char *&lt;/code&gt; buffer with the remainder of
+  the token (in this case &lt;code&gt;"newline"&lt;/code&gt;) plus a terminating null byte (to
+  guarantee that it&amp;rsquo;s a valid C string, even though we also pass the length
+  around)&lt;/li&gt;
+&lt;li&gt;Next we call &lt;code&gt;parse_character_name&lt;/code&gt; on the buffer, which figures out that
+  &lt;code&gt;newline&lt;/code&gt; means &lt;code&gt;'\n'&lt;/code&gt; and returns it&lt;/li&gt;
+&lt;li&gt;Finally, we call &lt;code&gt;make_character&lt;/code&gt; (defined earlier in &lt;code&gt;data.c&lt;/code&gt;), which
+  constructs the appropriate Sky value (a &lt;code&gt;value_t&lt;/code&gt;) and return the result&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2&gt;A design limitation&lt;/h2&gt;
+&lt;p&gt;One design limitation I wanted to maintain at this stage is that we only
+dynamically allocate memory (i.e. via &lt;code&gt;malloc&lt;/code&gt; and friends) when it&amp;rsquo;s time to
+construct a valid Sky value. This means there are maximum lengths for literal
+symbols, characters, and strings. That would be annoying or even unacceptable in
+a production language, particularly for strings, but it helps keep things simple
+for us (and has no real cost in our particular context):&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;#define READ_CHAR_BUFSZ     16
+#define READ_ATOM_BUFSZ    128
+#define READ_STRING_BUFSZ 1024
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;This limitation also makes &lt;code&gt;read_list&lt;/code&gt; somewhat interesting, which I&amp;rsquo;ll show
+here in full:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;#define REST(x) (((struct object *)(x))-&amp;gt;u.list.rest)
+
+static value_t read_list(FILE *stream)
+{
+    value_t list = NIL;
+    value_t last = NIL;
+
+    for (;;) {
+        int flag;
+        value_t value = read_sexp(stream, ')', &amp;amp;flag);
+        value_t cell;
+
+        if (flag == ')')
+            break;
+        if (flag == EOF)
+            error("EOF while reading");
+
+        cell = cons(value, NIL);
+
+        if (list == NIL)
+            last = list = cell;
+        else
+            last = REST(last) = cell;
+    }
+
+    return list;
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;We keep pointers to both the head of the list (&lt;code&gt;list&lt;/code&gt;) and the last cons cell in
+the list (&lt;code&gt;last&lt;/code&gt;). Every time we read a new element, we create a new cell, and
+mutate the &lt;code&gt;rest&lt;/code&gt; link of what had been the last element to point at the new
+cell.&lt;/p&gt;
+&lt;p&gt;As a result, &lt;code&gt;list&lt;/code&gt; is always a valid Sky list. We&amp;rsquo;ve declared that Sky lists
+are immutable, and here we are mutating one, but that&amp;rsquo;s okay because the value
+is never exposed outside of &lt;code&gt;read_list&lt;/code&gt; until it&amp;rsquo;s the full, complete list.&lt;/p&gt;
+&lt;p&gt;Why the limitation on dynamically allocating memory? Well, even though this is
+arguably looking too far ahead, it prevents read errors from either leaking
+memory or leaving invalid objects around that the garbage collector then has to
+deal with.&lt;/p&gt;
+&lt;h2&gt;A temporary omission&lt;/h2&gt;
+&lt;p&gt;If you&amp;rsquo;re familiar with Lisp and looked at &lt;code&gt;read_atom&lt;/code&gt;, you would probably
+notice something missing: &lt;code&gt;intern&lt;/code&gt;.&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;static value_t read_atom(FILE *stream)
+{
+    char buf[READ_ATOM_BUFSZ];
+    int len = read_token(stream, buf, READ_ATOM_BUFSZ, false);
+    // Other stuff
+    return make_symbol(make_string(buf, len));
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;We&amp;rsquo;ll add symbol interning in a future installment.&lt;/p&gt;
+&lt;h2&gt;Next time&lt;/h2&gt;
+&lt;p&gt;Next time we&amp;rsquo;ll add some tests for reading and printing, and add a REPL minus
+the &lt;code&gt;eval&lt;/code&gt; part.&lt;/p&gt;
+&lt;div class="footnote"&gt;
+&lt;hr&gt;
+&lt;ol&gt;
+&lt;li id="fn:sexp"&gt;
+&lt;p&gt;Symbolic expression&amp;#160;&lt;a class="footnote-backref" href="#fnref:sexp" title="Jump back to footnote 1 in the text"&gt;&amp;#8617;&amp;#xFE0E;&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li id="fn:dispatch"&gt;
+&lt;p&gt;Why &lt;code&gt;#\&lt;/code&gt; rather than just, say, &lt;code&gt;#&lt;/code&gt;? The idea is to use &lt;code&gt;#&lt;/code&gt; as a namespace
+of sorts; so far we&amp;rsquo;re only using one entry.&amp;#160;&lt;a class="footnote-backref" href="#fnref:dispatch" title="Jump back to footnote 2 in the text"&gt;&amp;#8617;&amp;#xFE0E;&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/div&gt;</content><category term="04"></category></entry><entry><title>Sky-0.0.3: Printing data</title><link href="https://jbm.io/2018/03/sky-0-0-3.html" rel="alternate"></link><published>2018-03-08T17:30:00-08:00</published><updated>2018-03-08T17:30:00-08:00</updated><author><name>John Mastro</name></author><id>tag:jbm.io,2018-03-08:/2018/03/sky-0-0-3.html</id><summary type="html">&lt;p&gt;This is part of a series of posts about writing a simple interpreter for a small
+Lisp-like language. Please see &lt;a href="https://jbm.io/sky.html"&gt;here&lt;/a&gt; for an overview of the series.&lt;/p&gt;
+&lt;p&gt;In the &lt;a href="https://jbm.io/2018/02/sky-0-0-1.html"&gt;last&lt;/a&gt; &lt;a href="https://jbm.io/2018/03/sky-0-0-2.html"&gt;two&lt;/a&gt; entries we defined a basic data model
+with a handful of types. Today we&amp;rsquo;ll add some functionality with …&lt;/p&gt;</summary><content type="html">&lt;p&gt;This is part of a series of posts about writing a simple interpreter for a small
+Lisp-like language. Please see &lt;a href="https://jbm.io/sky.html"&gt;here&lt;/a&gt; for an overview of the series.&lt;/p&gt;
+&lt;p&gt;In the &lt;a href="https://jbm.io/2018/02/sky-0-0-1.html"&gt;last&lt;/a&gt; &lt;a href="https://jbm.io/2018/03/sky-0-0-2.html"&gt;two&lt;/a&gt; entries we defined a basic data model
+with a handful of types. Today we&amp;rsquo;ll add some functionality with real,
+externally-observable effects: printing. Specifically, we&amp;rsquo;ll write functions
+that print Sky data to a C stream using representations that can be read back in
+to construct equivalent objects&lt;sup id="fnref:terminology"&gt;&lt;a class="footnote-ref" href="#fn:terminology"&gt;1&lt;/a&gt;&lt;/sup&gt;.&lt;/p&gt;
+&lt;p&gt;You can see the code as of this post &lt;a href="https://github.com/johnmastro/sky/tree/sky-0.0.3"&gt;here&lt;/a&gt;, and a comparison against last
+time &lt;a href="https://github.com/johnmastro/sky/compare/sky-0.0.2...sky-0.0.3"&gt;here&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;At the highest level, we have a function &lt;code&gt;print&lt;/code&gt; that dispatches to an
+appropriate function based on the type of value being printed, plus &lt;code&gt;println&lt;/code&gt;,
+which calls &lt;code&gt;print&lt;/code&gt; and then prints a newline.&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;void print(FILE *stream, value_t value)
+{
+    enum type_tag tag = get_type_tag(value);
+
+    switch(tag) {
+    case TAG_INT:    print_integer(stream, value); return;
+    case TAG_CHAR:   print_character(stream, value); return;
+    case TAG_STRING: print_string(stream, value); return;
+    case TAG_SYMBOL: print_symbol(stream, value); return;
+    case TAG_LIST:   print_list(stream, value); return;
+    default:         abort();
+    }
+}
+
+void println(FILE *stream, value_t value)
+{
+    print(stream, value);
+    putc('\n', stream);
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;The function to print an integer is the least interesting of them, especially
+since we&amp;rsquo;re not going to support printing in different bases.&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;static void print_integer(FILE *stream, value_t value)
+{
+    intptr_t i = integer_data(value);
+    fprintf(stream, "%" PRIdPTR, i);
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;It may be worth noting that &lt;code&gt;PRIdPTR&lt;/code&gt; is a preprocessor macro, defined in
+&lt;a href="http://pubs.opengroup.org/onlinepubs/007904975/basedefs/inttypes.h.html"&gt;&lt;code&gt;inttypes.h&lt;/code&gt;&lt;/a&gt; along with several others for the same purpose, that
+expands to whatever the correct format specifier is for &lt;code&gt;intptr_t&lt;/code&gt; on that
+platform. On my &lt;code&gt;x86-64&lt;/code&gt; machine running Fedora, it expands to &lt;code&gt;"ld"&lt;/code&gt;, making
+(via the automatic concatenation of adjacent string literals) &lt;code&gt;"%" PRIdPTR&lt;/code&gt;
+equivalent to &lt;code&gt;"%ld"&lt;/code&gt; (the format specifier for a &lt;code&gt;long&lt;/code&gt;).&lt;/p&gt;
+&lt;p&gt;The function to print a character is more involved because it has to handle a
+few different scenarios. Borrowing the syntax from Common Lisp, all character
+literals start with &lt;code&gt;#\&lt;/code&gt;, followed by:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;If it&amp;rsquo;s a non-whitespace character with a graphical representation, the
+  character itself. For example, the character &amp;ldquo;a&amp;rdquo; is printed as &lt;code&gt;#\a&lt;/code&gt;, and &amp;ldquo;!&amp;rdquo;
+  is printed as &lt;code&gt;#\!&lt;/code&gt;.&lt;/li&gt;
+&lt;li&gt;If it&amp;rsquo;s a whitespace character, a symbolic representation based on the
+  character&amp;rsquo;s name. For example, the space character is printed as &lt;code&gt;#\space&lt;/code&gt;,
+  and newline as &lt;code&gt;#\newline&lt;/code&gt;.&lt;/li&gt;
+&lt;li&gt;Otherwise, the character&amp;rsquo;s numeric value in hexadecimal, prefixed by &amp;ldquo;x&amp;rdquo;. For
+  example, the character code of ASCII &lt;code&gt;DEL&lt;/code&gt; is 7F in hexadecimal (127 in
+  decimal), so it&amp;rsquo;s printed as &lt;code&gt;#\x7F&lt;/code&gt;.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Here it is:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;static void print_character(FILE *stream, value_t value)
+{
+    int c = character_data(value);
+
+    fputs("#\\", stream);
+
+    if (isgraph(c)) {
+        putc(c, stream);
+        return;
+    }
+
+    switch(c) {
+    case '\b': fputs("backspace", stream); return;
+    case '\t': fputs("tab", stream); return;
+    case '\n': fputs("newline", stream); return;
+    case '\v': fputs("vtab", stream); return;
+    case '\f': fputs("formfeed", stream); return;
+    case '\r': fputs("return", stream); return;
+    case ' ':  fputs("space", stream); return;
+    default:   fprintf(stream, "x%02X", c); return;
+    }
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;The functions to print strings and symbols both call out to &lt;code&gt;print_string_1&lt;/code&gt; and
+pass a &lt;code&gt;bool&lt;/code&gt; argument, &lt;code&gt;symbol&lt;/code&gt;, to identify whether the value should be
+printed as a symbol. The only difference here is that strings are printed within
+double-quotes while symbols aren&amp;rsquo;t&lt;sup id="fnref:symbol-problem"&gt;&lt;a class="footnote-ref" href="#fn:symbol-problem"&gt;2&lt;/a&gt;&lt;/sup&gt;.&lt;/p&gt;
+&lt;p&gt;Like in &lt;code&gt;print_character&lt;/code&gt;, we have a &lt;code&gt;switch&lt;/code&gt; statement to control how certain
+characters are represented. This time we print a space as, well, a space, and
+other whitespace characters in their standard backslash-escaped string syntax.
+Because we want what we print to be valid syntax (so it can be &lt;code&gt;read&lt;/code&gt; back in),
+we also backslash-escape double-quotes to keep them from terminating the string
+prematurely, and backslash characters to keep them from being interpreted as
+escapes. Characters without printable representations are again represented in
+hex, like &lt;code&gt;\x7F&lt;/code&gt;.&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;static void print_string_1(FILE *stream, value_t value, bool symbol)
+{
+    ptrdiff_t len = string_length(value);
+
+    if (!symbol) putc('"', stream);
+
+    for (ptrdiff_t i = 0; i &amp;lt; len; i++) {
+        int c = string_ref(value, i);
+
+        switch(c) {
+        case '\b': fputs("\\b", stream); break;
+        case '\t': fputs("\\t", stream); break;
+        case '\n': fputs("\\n", stream); break;
+        case '\v': fputs("\\v", stream); break;
+        case '\f': fputs("\\f", stream); break;
+        case '\r': fputs("\\r", stream); break;
+        case '"':  fputs("\\\"", stream); break;
+        case '\\': fputs("\\\\", stream); break;
+        default:
+            if (isprint(c))
+                putc(c, stream);
+            else
+                fprintf(stream, "\\x%02X", c);
+            break;
+        }
+    }
+
+    if (!symbol) putc('"', stream);
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Then we have the actual &lt;code&gt;print_string&lt;/code&gt; and &lt;code&gt;print_symbol&lt;/code&gt; functions, which both
+simply call &lt;code&gt;print_string_1&lt;/code&gt; with appropriate arguments.&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;static void print_string(FILE *stream, value_t value)
+{
+    print_string_1(stream, value, false);
+}
+
+static void print_symbol(FILE *stream, value_t value)
+{
+    value_t name = symbol_name(value);
+    print_string_1(stream, name, true);
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Last but not least we have &lt;code&gt;print_list&lt;/code&gt;. In Lisps, lists are printed delimited
+between parentheses, with a space between each element. A list containing the
+strings &amp;ldquo;cool&amp;rdquo; and &amp;ldquo;list&amp;rdquo; will therefore look like &lt;code&gt;("cool" "list")&lt;/code&gt;. Besides
+printing those delimiters, it just loops through the list and invokes &lt;code&gt;print&lt;/code&gt; on
+each element.&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;static void print_list(FILE *stream, value_t value)
+{
+    putc('(', stream);
+
+    while (value != NIL) {
+        value_t fst = first(value);
+        print(stream, fst);
+        value = rest(value);
+        if (value != NIL)
+            putc(' ', stream);
+    }
+
+    putc(')', stream);
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h2&gt;Error handling and the lack thereof&lt;/h2&gt;
+&lt;p&gt;C I/O functions like &lt;code&gt;putc&lt;/code&gt;, &lt;code&gt;fputs&lt;/code&gt;, and &lt;code&gt;fprintf&lt;/code&gt; can all report errors via
+their return value. We&amp;rsquo;re ignoring that for now, but a production language would
+certainly need to pay attention and respond appropriately.&lt;/p&gt;
+&lt;h2&gt;Convenient printing in GDB&lt;/h2&gt;
+&lt;p&gt;If you use these printing functions in GDB, you will quickly get tired of typing
+&lt;code&gt;call println(stdout, value)&lt;/code&gt;. Luckily, GDB supports &lt;a href="https://sourceware.org/gdb/onlinedocs/gdb/Define.html"&gt;user-defined
+commands&lt;/a&gt;, so we can make things more convenient.&lt;/p&gt;
+&lt;p&gt;I added a file &lt;code&gt;.gdbinit&lt;/code&gt; in Sky&amp;rsquo;s &lt;code&gt;src&lt;/code&gt; directory which defines two commands:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;define pp
+  set $tmp = $arg0
+  call println(stdout, $tmp)
+end
+
+define pr
+  pp $
+end
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;The command &lt;code&gt;pp&lt;/code&gt; prints its argument, and &lt;code&gt;pr&lt;/code&gt; calls &lt;code&gt;pp&lt;/code&gt; on the last output.
+Here&amp;rsquo;s a quick demo:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;~/code/sky/src/&amp;gt; gdb sky
+(gdb) source .gdbinit
+(gdb) br main
+(gdb) r
+(gdb) set $s1 = make_string("cool", 4)
+(gdb) set $s2 = make_string("list", 4)
+(gdb) set $list = cons($s1, cons($s2, NIL))
+(gdb) pp $list
+("cool" "list")
+(gdb) print make_symbol(make_string("sky", 3))
+$1 = 6317808
+(gdb) pr
+sky
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;If you add the &lt;code&gt;src&lt;/code&gt; directory to GDB&amp;rsquo;s &lt;a href="https://sourceware.org/gdb/onlinedocs/gdb/Auto_002dloading-safe-path.html"&gt;auto-loading safe path&lt;/a&gt;, it
+will source &lt;code&gt;.gdbinit&lt;/code&gt; automatically (meaning you won&amp;rsquo;t need to type &lt;code&gt;source
+.gdbinit&lt;/code&gt; as I did in the first GDB command above).&lt;/p&gt;
+&lt;h2&gt;Next time&lt;/h2&gt;
+&lt;p&gt;That&amp;rsquo;s all for now. Next time we&amp;rsquo;ll add the functionality to &lt;code&gt;read&lt;/code&gt; Sky data.&lt;/p&gt;
+&lt;div class="footnote"&gt;
+&lt;hr&gt;
+&lt;ol&gt;
+&lt;li id="fn:terminology"&gt;
+&lt;p&gt;This is also called &lt;a href="https://en.wikipedia.org/wiki/Serialization"&gt;serialization&lt;/a&gt; to differentiate it from writing
+arbitrary bytes. Different languages make this distinction in different
+ways. In Common Lisp terms, we&amp;rsquo;re writing &lt;code&gt;prin1&lt;/code&gt; as opposed to &lt;code&gt;write&lt;/code&gt; or
+&lt;code&gt;princ&lt;/code&gt;. In Python terms, we&amp;rsquo;re writing an equivalent to &lt;code&gt;print("%r" % obj)&lt;/code&gt;
+as opposed to &lt;code&gt;print("%s" % obj)&lt;/code&gt;.&amp;#160;&lt;a class="footnote-backref" href="#fnref:terminology" title="Jump back to footnote 1 in the text"&gt;&amp;#8617;&amp;#xFE0E;&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li id="fn:symbol-problem"&gt;
+&lt;p&gt;Note that there&amp;rsquo;s a problem with this. A symbol can have &lt;em&gt;any&lt;/em&gt; string as its
+name, and in this implementation symbols with certain names can&amp;rsquo;t be read
+back in correctly. For instance, a symbol with the name &lt;code&gt;"foo bar"&lt;/code&gt;, would
+be printed &lt;code&gt;foo bar&lt;/code&gt;, but that would be read back in as two symbols (&lt;code&gt;foo&lt;/code&gt;
+and &lt;code&gt;bar&lt;/code&gt;). We&amp;rsquo;ll come back to this later.&amp;#160;&lt;a class="footnote-backref" href="#fnref:symbol-problem" title="Jump back to footnote 2 in the text"&gt;&amp;#8617;&amp;#xFE0E;&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/div&gt;</content><category term="03"></category></entry><entry><title>I'm now maintaining Unidecode for Emacs</title><link href="https://jbm.io/2018/03/maintaining-unidecode-for-emacs.html" rel="alternate"></link><published>2018-03-06T18:23:00-08:00</published><updated>2018-03-12T18:32:00-07:00</updated><author><name>John Mastro</name></author><id>tag:jbm.io,2018-03-06:/2018/03/maintaining-unidecode-for-emacs.html</id><summary type="html">&lt;p&gt;As of today I&amp;rsquo;m officially the maintainer of &lt;a href="https://github.com/sindikat/unidecode"&gt;the Unidecode package for
+Emacs&lt;/a&gt;. Unidecode provides functions for transliterating
+Unicode text to ASCII. It&amp;rsquo;s based on the &lt;a href="https://pypi.python.org/pypi/Unidecode"&gt;Unidecode package for
+Python&lt;/a&gt;, which was in turn derived from the
+&lt;a href="http://search.cpan.org/~sburke/Text-Unidecode-1.30/lib/Text/Unidecode.pm"&gt;Text::Unidecode&lt;/a&gt; package for Perl.&lt;/p&gt;
+&lt;p&gt;I was playing with the package …&lt;/p&gt;</summary><content type="html">&lt;p&gt;As of today I&amp;rsquo;m officially the maintainer of &lt;a href="https://github.com/sindikat/unidecode"&gt;the Unidecode package for
+Emacs&lt;/a&gt;. Unidecode provides functions for transliterating
+Unicode text to ASCII. It&amp;rsquo;s based on the &lt;a href="https://pypi.python.org/pypi/Unidecode"&gt;Unidecode package for
+Python&lt;/a&gt;, which was in turn derived from the
+&lt;a href="http://search.cpan.org/~sburke/Text-Unidecode-1.30/lib/Text/Unidecode.pm"&gt;Text::Unidecode&lt;/a&gt; package for Perl.&lt;/p&gt;
+&lt;p&gt;I was playing with the package (inspired by a desire to semi-automatically
+generate article slugs for this blog) and ended up submitting &lt;a href="https://github.com/sindikat/unidecode/pull/3"&gt;a pull
+request&lt;/a&gt; with some changes to address &amp;ldquo;TODO&amp;rdquo; items in the
+project&amp;rsquo;s README. The author merged the commits and mentioned that he doesn&amp;rsquo;t
+use the package anymore, so I offered to take on maintaining it in case my
+changes cause any problems.&lt;/p&gt;
+&lt;p&gt;The MELPA recipe has been updated as of 2018-03-11, so &lt;code&gt;package-install&lt;/code&gt; away!&lt;/p&gt;
+&lt;p&gt;&lt;s&gt;Before you rush off to install it, please note that the &lt;a href="https://melpa.org"&gt;MELPA&lt;/a&gt; recipe is
+currently broken. I submitted &lt;a href="https://github.com/melpa/melpa/pull/5351"&gt;a pull request&lt;/a&gt; to update it, which
+will hopefully be merged soon.&lt;/s&gt;&lt;/p&gt;</content><category term="03"></category></entry><entry><title>Sky 0.0.2: Immediate integers and characters</title><link href="https://jbm.io/2018/03/sky-0-0-2.html" rel="alternate"></link><published>2018-03-06T18:02:00-08:00</published><updated>2018-03-06T18:02:00-08:00</updated><author><name>John Mastro</name></author><id>tag:jbm.io,2018-03-06:/2018/03/sky-0-0-2.html</id><summary type="html">&lt;p&gt;First of all, I apologize if you&amp;rsquo;re subscribed to the feed and are seeing
+duplicates of the last two posts. In both cases I changed things after
+publication that resulted in a different feed entry ID, causing many feed
+readers to treat the changed entry as a &lt;em&gt;new&lt;/em&gt; entry …&lt;/p&gt;</summary><content type="html">&lt;p&gt;First of all, I apologize if you&amp;rsquo;re subscribed to the feed and are seeing
+duplicates of the last two posts. In both cases I changed things after
+publication that resulted in a different feed entry ID, causing many feed
+readers to treat the changed entry as a &lt;em&gt;new&lt;/em&gt; entry. I think I have things
+sorted out well enough now that it won&amp;rsquo;t be an issue going forward.&lt;/p&gt;
+&lt;p&gt;&lt;a href="https://jbm.io/2018/02/sky-0-0-1.html"&gt;Last time&lt;/a&gt; we wrote constructors and accessors for a handful of basic data
+types, all of them dynamically &lt;a href="https://stackoverflow.com/questions/79923/what-and-where-are-the-stack-and-heap"&gt;allocated in the heap (as opposed to on the
+stack)&lt;/a&gt;. This time we&amp;rsquo;re going to change the representation of
+integers and characters so that they&amp;rsquo;re immediate values and don&amp;rsquo;t require
+dynamic allocation. You can see the code as of this post &lt;a href="https://github.com/johnmastro/sky/tree/sky-0.0.2"&gt;on the sky-0.0.2
+tag&lt;/a&gt;, and the log of changes since the first time &lt;a href="https://github.com/johnmastro/sky/compare/sky-0.0.1...sky-0.0.2"&gt;here&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;The technique we&amp;rsquo;ll use to do this is widely used in programming language
+implementations, operating systems, and &amp;ldquo;low level&amp;rdquo; software more generally. It
+starts from the observation that the memory returned by functions like &lt;code&gt;malloc&lt;/code&gt;
+must be suitably &lt;a href="https://en.wikipedia.org/wiki/Data_structure_alignment#Definitions"&gt;aligned&lt;/a&gt; for any (C) object.&lt;/p&gt;
+&lt;p&gt;As of C11, there&amp;rsquo;s a type &lt;a href="http://en.cppreference.com/w/c/types/max_align_t"&gt;&lt;code&gt;max_align_t&lt;/code&gt;&lt;/a&gt; (defined in &lt;code&gt;stddef.h&lt;/code&gt;)
+whose alignment is at least as large as that of every scalar type, plus an
+operator &lt;a href="http://en.cppreference.com/w/c/language/_Alignof"&gt;&lt;code&gt;alignof&lt;/code&gt;&lt;/a&gt; (defined in &lt;code&gt;stdalign.h&lt;/code&gt;) which will tell us the
+alignment requirement of a given type. We can use them to write a small test
+program that will tell us what alignment we can count on from &lt;code&gt;malloc&lt;/code&gt;:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;#include &amp;lt;stdio.h&amp;gt;
+#include &amp;lt;stddef.h&amp;gt;
+#include &amp;lt;stdalign.h&amp;gt;
+
+int main(void)
+{
+    printf("alignof(max_align_t) = %zu\n", alignof(max_align_t));
+    return 0;
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;In practice, the answer on a 64-bit machine will be 16 (bytes). The upshot is
+that memory addresses returned by functions like &lt;code&gt;malloc&lt;/code&gt; will always be
+divisible by 16. Put another way, the 4 least significant bits of such memory
+addresses will always be zero (because 16 is &lt;code&gt;2^4&lt;/code&gt;). On a 32-bit machine, the
+minimum alignment will be 8 bytes, making the 3 least significant bits zero. You
+can also &lt;a href="https://www.gnu.org/software/libc/manual/html_node/Aligned-Memory-Blocks.html"&gt;requested more highly-aligned memory&lt;/a&gt; using special
+allocation functions.&lt;/p&gt;
+&lt;p&gt;The bottom line is that at least the three least significant bits of our &lt;code&gt;struct
+object *&lt;/code&gt; pointers will always be zero&lt;sup id="fnref:small-machines"&gt;&lt;a class="footnote-ref" href="#fn:small-machines"&gt;1&lt;/a&gt;&lt;/sup&gt;, which means we can use
+those bits for something else. If we use all three bits we can store 8 possible
+values there, but for now we&amp;rsquo;ll only use two bits, for four possible values.
+We&amp;rsquo;ll use them to store a type tag, with the following scheme:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;Binary | Decimal | Type
+-------|---------|-----------
+    00 |       0 | Pointer
+    01 |       1 | Integer
+    10 |       2 | Character
+    11 |       3 | Unused
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;If the two least significant bits are &lt;code&gt;00&lt;/code&gt;, the value represents a pointer
+(specifically, a &lt;code&gt;struct object *&lt;/code&gt;). If they&amp;rsquo;re &lt;code&gt;01&lt;/code&gt; the object is an integer,
+if they&amp;rsquo;re &lt;code&gt;10&lt;/code&gt; it&amp;rsquo;s a character, and we&amp;rsquo;ll leave &lt;code&gt;11&lt;/code&gt; unused for now.&lt;/p&gt;
+&lt;p&gt;Taking a step back for a moment, while we could tag the &lt;code&gt;struct object *&lt;/code&gt; values
+directly, things will be cleaner and clearer if we instead introduce a C type
+that&amp;rsquo;s &lt;em&gt;either&lt;/em&gt; a pointer &lt;em&gt;or&lt;/em&gt; an immediate value. We introduce &lt;code&gt;value_t&lt;/code&gt; to
+fill that roll:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;typedef intptr_t value_t;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;It&amp;rsquo;s a &lt;code&gt;typedef&lt;/code&gt; of &lt;code&gt;intptr_t&lt;/code&gt;, which is a signed integer large enough to hold a
+pointer. The downside is a bunch of extra casts, but they&amp;rsquo;ll be well-contained
+in the constructors and accesssors.&lt;/p&gt;
+&lt;p&gt;Okay, so how do we construct one of these tagged objects? We shift the value
+left by two bits and then add the tag.&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;#define TAG_BITS 2
+#define PTR_BITS (sizeof(intptr_t) * CHAR_BIT)
+#define VAL_BITS (PTR_BITS - TAG_BITS)
+#define VAL_MASK (-(1 &amp;lt;&amp;lt; TAG_BITS))
+
+value_t make_integer(intptr_t value)
+{
+    return ((uintptr_t)value &amp;lt;&amp;lt; TAG_BITS) + TAG_INT;
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;And then to get the original value back we simply shift right by two bits.&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;intptr_t integer_data(value_t value)
+{
+    return value &amp;gt;&amp;gt; TAG_BITS;
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Of course we also need to teach &lt;code&gt;get_type_tag&lt;/code&gt; about these immediate values.&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;enum type_tag get_type_tag(value_t value)
+{
+    if (value == NIL) return TAG_LIST;
+
+    enum type_tag tag = value &amp;amp; ~VAL_MASK;
+
+    if (!tag)
+        tag = ((struct object *)value)-&amp;gt;tag;
+
+    return tag;
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;If your background is in higher-level dynamic programming languages like Python,
+you may not be very familiar with these &lt;a href="https://en.wikipedia.org/wiki/Bitwise_operations_in_C"&gt;bitwise operations&lt;/a&gt;. I wasn&amp;rsquo;t,
+anyway, until I started poking around in programming language implementations.
+My advice is to read up on them a bit and then spend some time playing around in
+GDB. Conveniently, you can use &lt;code&gt;print /t&lt;/code&gt; (which can be abbreviated to &lt;code&gt;p/t&lt;/code&gt;) to
+print the binary representation of a value, which makes it easy to see the
+effect of bitwise operations.&lt;/p&gt;
+&lt;p&gt;Here&amp;rsquo;s an example session experimenting with the bitwise operations we use to
+tag and untag an integer:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;(gdb) set $i = 123
+(gdb) p/t $i
+$1 = 1111011
+(gdb) p/t $i &amp;lt;&amp;lt; 2
+$2 = 111101100
+(gdb) set $t = ($i &amp;lt;&amp;lt; 2) + 1
+(gdb) p/t $t
+$3 = 111101101
+(gdb) p/t $t &amp;gt;&amp;gt; 2
+$4 = 1111011
+(gdb) p $t &amp;gt;&amp;gt; 2
+$5 = 123
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Since we&amp;rsquo;re using two bits for the type tag, we only have either 62 or 30 bits
+left over for integer values. We can define preprocessor macros to identify the
+largest and smallest values we can represent.&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;#define MOST_POSITIVE_INT (INTPTR_MAX &amp;gt;&amp;gt; TAG_BITS)
+#define MOST_NEGATIVE_INT (-1 - MOST_POSITIVE_INT)
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;We&amp;rsquo;re not going to do any error checking in &lt;code&gt;make_integer&lt;/code&gt; yet, but eventually
+we&amp;rsquo;ll want to signal in error if an operation would result in an integer too
+large for us to represent. (In a production language, you would hopefully
+promote it to a &amp;ldquo;bignum&amp;rdquo; - an arbitrary precision integer - but we probably
+won&amp;rsquo;t go there).&lt;/p&gt;
+&lt;p&gt;For objects that will still be dynamically allocated on the heap, the only
+change is that we cast the &lt;code&gt;struct object *&lt;/code&gt; to &lt;code&gt;value_t&lt;/code&gt; when we return it, and
+then in the accessors cast back to &lt;code&gt;struct object *&lt;/code&gt; so we can dereference it.&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;value_t make_string(const char *data, ptrdiff_t len)
+{
+    // Construct the `struct object *` the same as before
+    return (value_t)obj;
+}
+
+const unsigned char *string_data(value_t value)
+{
+    return ((struct object *)value)-&amp;gt;u.string.data;
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;To sum things up, we now have the following arrangement: At the C level, a Sky
+value is represented by a &lt;code&gt;value_t&lt;/code&gt;. Each &lt;code&gt;value_t&lt;/code&gt; is either an immediate value
+(an integer or character), or a &lt;code&gt;struct object *&lt;/code&gt;. To access the immediate
+value, we untag it; to access a &lt;code&gt;struct object&lt;/code&gt;, we perform the cast and
+dereference the pointer.&lt;/p&gt;
+&lt;p&gt;You can take this technique a lot further than we have here. We could get rid of
+the &lt;code&gt;tag&lt;/code&gt; member of &lt;code&gt;struct object&lt;/code&gt; entirely and tag all pointers rather than
+just immediate values. However, my hope is that this more minimal version gets
+us the low-hanging fruit and demonstrates the technique while keeping things as
+clear as possible.&lt;/p&gt;
+&lt;div class="footnote"&gt;
+&lt;hr&gt;
+&lt;ol&gt;
+&lt;li id="fn:small-machines"&gt;
+&lt;p&gt;I am ignoring sub-32 bit machines, which I think is reasonable in this
+context.&amp;#160;&lt;a class="footnote-backref" href="#fnref:small-machines" title="Jump back to footnote 1 in the text"&gt;&amp;#8617;&amp;#xFE0E;&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/div&gt;</content><category term="03"></category></entry><entry><title>Sky 0.0.1: Basic data model</title><link href="https://jbm.io/2018/02/sky-0-0-1.html" rel="alternate"></link><published>2018-02-13T15:55:00-08:00</published><updated>2018-02-13T15:55:00-08:00</updated><author><name>John Mastro</name></author><id>tag:jbm.io,2018-02-13:/2018/02/sky-0-0-1.html</id><summary type="html">&lt;p&gt;This is the first post in what will be a series of posts about implementing an
+interpreter for a small Lisp-like language, which I&amp;rsquo;m calling Sky. I&amp;rsquo;ve put up a
+page &lt;a href="https://jbm.io/sky.html"&gt;here&lt;/a&gt; with more information about my goals for this project. The code
+as of this post is …&lt;/p&gt;</summary><content type="html">&lt;p&gt;This is the first post in what will be a series of posts about implementing an
+interpreter for a small Lisp-like language, which I&amp;rsquo;m calling Sky. I&amp;rsquo;ve put up a
+page &lt;a href="https://jbm.io/sky.html"&gt;here&lt;/a&gt; with more information about my goals for this project. The code
+as of this post is tagged &lt;a href="https://github.com/johnmastro/sky/tree/sky-0.0.1"&gt;sky-0.0.1&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;I&amp;rsquo;m starting by defining a basic data model, i.e. how Sky values will be
+represented in C (the implementation language). If you&amp;rsquo;re already familiar with
+how dynamically-typed data is represented in C this may be a bit boring, but we
+have to start somewhere.&lt;/p&gt;
+&lt;p&gt;Being dynamically typed means that type information needs to be attached to each
+value (as opposed to variable). I&amp;rsquo;ll use an &lt;code&gt;enum&lt;/code&gt; for this.&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;enum type_tag {
+    TAG_NONE = 0,
+    TAG_INT,
+    TAG_CHAR,
+    TAG_STRING,
+    TAG_SYMBOL,
+    TAG_LIST
+};
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;As you can see, the types I&amp;rsquo;m defining at this stage are integers, characters,
+strings, symbols, and lists. There are a few types I&amp;rsquo;ll almost certainly add
+later on (e.g. functions) and others that, while important and interesting in
+their own right, I may skip (e.g. floating point numbers).&lt;/p&gt;
+&lt;p&gt;Next I define the C structures that will represent Sky values.&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;struct string {
+    ptrdiff_t len;
+    unsigned char *data;
+};
+
+struct symbol {
+    struct object *name;
+};
+
+struct list {
+    struct object *first;
+    struct object *rest;
+};
+
+struct object {
+    enum type_tag tag;
+
+    union {
+        intptr_t i;
+        int c;
+        struct string string;
+        struct symbol symbol;
+        struct list list;
+    } u;
+};
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Using a &lt;code&gt;union&lt;/code&gt; embedded in a &lt;code&gt;struct&lt;/code&gt; alongside a type tag is probably the most
+obvious way to represent dynamically-typed values in C, but it&amp;rsquo;s not the only
+option and does have a couple notable downsides. Most importantly, a &lt;code&gt;union&lt;/code&gt; is
+always the size of its largest member. In this case, that means that on an
+x86-64 the &lt;code&gt;union&lt;/code&gt; uses 16 bytes (as required by &lt;code&gt;struct string&lt;/code&gt; and &lt;code&gt;struct
+list&lt;/code&gt;), even when it only contains a 4-byte &lt;code&gt;int&lt;/code&gt; (representing a character
+code). However, that concern is purely hypothetical for now, and I&amp;rsquo;ll most
+likely revise the data model a few times going forward anyway, so I&amp;rsquo;m not going
+to worry about it.&lt;/p&gt;
+&lt;p&gt;Next up are constructors and accessors for the various types. I&amp;rsquo;ll show those
+for strings here since they have the most going on.&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;struct object *make_object(enum type_tag tag)
+{
+    struct object *obj = xmalloc(sizeof(*obj));
+    obj-&amp;gt;tag = tag;
+    return obj;
+}
+
+struct object *make_string(const char *data, ptrdiff_t len)
+{
+    assert(len &amp;gt;= 0);
+    assert(len != PTRDIFF_MAX);
+    struct object *obj = make_object(TAG_STRING);
+    obj-&amp;gt;u.string.len = len;
+    obj-&amp;gt;u.string.data = xmalloc(len + 1);
+    memcpy(obj-&amp;gt;u.string.data, data, len);
+    obj-&amp;gt;u.string.data[len] = '\0';
+    return obj;
+}
+
+ptrdiff_t string_length(struct object *obj)
+{
+    return obj-&amp;gt;u.string.len;
+}
+
+const unsigned char *string_data(struct object *obj)
+{
+    return obj-&amp;gt;u.string.data;
+}
+
+int string_ref(struct object *obj, ptrdiff_t i)
+{
+    const unsigned char *data = string_data(obj);
+    return data[i];
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;A few things to note:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;I&amp;rsquo;m using a function &lt;code&gt;xmalloc&lt;/code&gt; (defined in &lt;a href="https://github.com/johnmastro/sky/blob/sky-0.0.1/src/memory.c"&gt;memory.c&lt;/a&gt;) to allocate memory.
+  It calls &lt;code&gt;abort&lt;/code&gt; (via &lt;code&gt;error&lt;/code&gt;, defined in &lt;a href="https://github.com/johnmastro/sky/blob/sky-0.0.1/src/error.c"&gt;error.c&lt;/a&gt;) if &lt;code&gt;malloc&lt;/code&gt; is unable
+  to allocate memory, so its callers don&amp;rsquo;t need to check for null pointers.&lt;/li&gt;
+&lt;li&gt;Unlike C strings, Sky strings include their length, and thus can contain
+  embedded &lt;code&gt;NUL&lt;/code&gt; bytes. However, &lt;code&gt;make_string&lt;/code&gt; still ensures that the string
+  data is &lt;code&gt;NUL&lt;/code&gt;-terminated, so that the string data is always a valid C string.
+  Although, if the string does contain embedded &lt;code&gt;NUL&lt;/code&gt; bytes, then Sky and
+  (naive) C code will have different views of the string&amp;rsquo;s length and value.&lt;/li&gt;
+&lt;li&gt;Sky&amp;rsquo;s lists are traditional singly-linked lists. Unlike Common Lisp and
+  Scheme, Sky won&amp;rsquo;t allow &amp;ldquo;dotted pairs&amp;rdquo;, i.e. cons cells with arbitrary
+  elements in their &lt;code&gt;rest&lt;/code&gt; (a.k.a. &lt;code&gt;cdr&lt;/code&gt;) field. In other words, the second
+  argument to &lt;code&gt;cons&lt;/code&gt; must be a list or &lt;code&gt;nil&lt;/code&gt;. The latter is represented as a
+  null pointer.&lt;/li&gt;
+&lt;li&gt;Accessors like &lt;code&gt;string_length&lt;/code&gt;, &lt;code&gt;string_data&lt;/code&gt;, and &lt;code&gt;string_ref&lt;/code&gt; are often
+  implemented as macros rather than functions. Sometimes this is for efficiency
+  (particularly in unoptimized builds where the functions won&amp;rsquo;t be inlined), or
+  because the the macro definitions would be more concise and could also be used
+  for mutating their arguments. None of those reasons are particularly
+  compelling for Sky, but the main reason I&amp;rsquo;ve implemented them as functions is
+  so they&amp;rsquo;re available within a debugger session&lt;sup id="fnref:gdb-lldb"&gt;&lt;a class="footnote-ref" href="#fn:gdb-lldb"&gt;1&lt;/a&gt;&lt;/sup&gt;.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Speaking of debuggers, it&amp;rsquo;s sometimes useful to use one as a sort of REPL.
+Here&amp;rsquo;s a (lightly edited) brief example session in &lt;code&gt;gdb&lt;/code&gt; where I set a
+breakpoint on &lt;code&gt;main&lt;/code&gt;, run the program, and then experiment with the functions
+for integers and strings.&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;~/code/sky $ make clean all
+~/code/sky $ gdb src/sky
+(gdb) br main
+Breakpoint 1 at 0x400c2a: file src/sky.c, line 42.
+(gdb) r
+Starting program: /home/jbm/code/sky/src/sky
+Breakpoint 1, main () at src/sky.c:42
+(gdb) set $i = make_integer(100)
+(gdb) p $i
+$1 = (struct object *) 0x603260
+(gdb) p *$i
+$2 = {tag = TAG_INT, u = {i = 100, ...}}
+(gdb) p integer_data($i)
+$3 = 100
+(gdb) set $s = make_string("foo", 3)
+(gdb) p $s
+$4 = (struct object *) 0x603280
+(gdb) p *$s
+$5 = {tag = TAG_STRING, u = {..., string = {len = 3, data = 0x6032a0 "foo"}, ...}}
+(gdb) p string_data($s)
+$6 = (const unsigned char *) 0x6032a0 "foo"
+(gdb) p string_length($s)
+$7 = 3
+(gdb) p string_ref($s, 0)
+$8 = 102
+(gdb) p/c string_ref($s, 0)
+$9 = 102 'f'
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;See &lt;a href="https://github.com/johnmastro/sky/tree/sky-0.0.1"&gt;the code on GitHub&lt;/a&gt; for all the details - I haven&amp;rsquo;t discussed every
+line (or even every file) here, just picked out a few details for discussion. If
+you&amp;rsquo;ve come across this and have any questions or comments, please feel free to
+send me an email at the address below.&lt;/p&gt;
+&lt;div class="footnote"&gt;
+&lt;hr&gt;
+&lt;ol&gt;
+&lt;li id="fn:gdb-lldb"&gt;
+&lt;p&gt;GDB can make macros available for use while debugging but, as far as I know,
+LLDB currently cannot.&amp;#160;&lt;a class="footnote-backref" href="#fnref:gdb-lldb" title="Jump back to footnote 1 in the text"&gt;&amp;#8617;&amp;#xFE0E;&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/div&gt;</content><category term="02"></category></entry><entry><title>Blog reboot</title><link href="https://jbm.io/2018/02/blog-reboot.html" rel="alternate"></link><published>2018-02-13T15:00:00-08:00</published><updated>2018-02-13T15:00:00-08:00</updated><author><name>John Mastro</name></author><id>tag:jbm.io,2018-02-13:/2018/02/blog-reboot.html</id><summary type="html">&lt;p&gt;In which I reboot this site&lt;/p&gt;</summary><content type="html">&lt;p&gt;I&amp;rsquo;ve had a site here since 2013 but, for a variety of reasons, I haven&amp;rsquo;t posted
+anything since early 2014&lt;sup id="fnref:four-years"&gt;&lt;a class="footnote-ref" href="#fn:four-years"&gt;1&lt;/a&gt;&lt;/sup&gt;. I want to start writing again now, and
+this time I have a better idea what I want to write about, at least to start.&lt;/p&gt;
+&lt;p&gt;I also want to ditch the old stuff and start fresh. I know, it&amp;rsquo;s bad form to
+break URLs, but in this case the damage is nominal. Either way, I&amp;rsquo;ve already
+decided to go for the &lt;a href="https://en.wikipedia.org/wiki/Reboot_(fiction)"&gt;reboot&lt;/a&gt;, and in fact have already done it. (However, I
+did preserve the &lt;a href="https://en.wikipedia.org/wiki/Atom_(Web_standard)"&gt;Atom&lt;/a&gt; feed&amp;rsquo;s location, so neither of my subscribers will
+need to change anything.)&lt;/p&gt;
+&lt;p&gt;With that out of the way, I&amp;rsquo;ll be back soon with a new post.&lt;/p&gt;
+&lt;div class="footnote"&gt;
+&lt;hr&gt;
+&lt;ol&gt;
+&lt;li id="fn:four-years"&gt;
+&lt;p&gt;Just over four years ago as I write this, which is roughly two fifths of an
+eternity on the internet.&amp;#160;&lt;a class="footnote-backref" href="#fnref:four-years" title="Jump back to footnote 1 in the text"&gt;&amp;#8617;&amp;#xFE0E;&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/div&gt;</content><category term="02"></category></entry></feed>
