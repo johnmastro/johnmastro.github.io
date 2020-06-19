@@ -1,0 +1,279 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-43613920-1"></script>
+    <script src="/static/gtag.js"></script>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="This is part of a series of posts about writing a simple interpreter for a small Lisp-like language. Please see here for an overview of the series. In the last two entries we defined a basic data model with a handful of types. Today we’ll add some functionality with …">
+    <meta name="author" content="John Mastro">
+    <title>John Mastro: Sky-0.0.3: Printing data</title>
+    <link rel="alternate" type="application/atom+xml" href="/None" title="John Mastro Atom Feed">
+    <!--[if lt IE 9]>
+    <script src="/static/html5shiv.min.js"></script>
+    <![endif]-->
+    <link rel="stylesheet" href="/static/normalize.min.css">
+    <link rel="stylesheet" href="/static/base.min.css">
+    <link rel="stylesheet" href="/static/style.css">
+    <!-- Favicon variations and markup generated via
+         https://realfavicongenerator.net -->
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <link rel="manifest" href="/site.webmanifest">
+    <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+    <meta name="msapplication-TileColor" content="#2d89ef">
+    <meta name="theme-color" content="#000000">
+  </head>
+  <body>
+    <header id="main-header">
+      <div id="logo">
+        <a href="/">John Mastro</a>
+      </div>
+      <nav>
+        <a href="/archive.html">archive</a>
+      </nav>
+    </header>
+    <main>
+<article>
+  <header>
+    <h1 class="article-title">Sky-0.0.3: Printing data</h1>
+    <p class="article-date">
+      <time class="published" datetime="2018-03-08T17:30:00-08:00">
+        2018-03-08
+      </time>
+    </p>
+  </header>
+  <div class="article-content">
+    <p>This is part of a series of posts about writing a simple interpreter for a small
+Lisp-like language. Please see <a href="https://jbm.io/sky.html">here</a> for an overview of the series.</p>
+<p>In the <a href="https://jbm.io/2018/02/sky-0-0-1.html">last</a> <a href="https://jbm.io/2018/03/sky-0-0-2.html">two</a> entries we defined a basic data model
+with a handful of types. Today we&rsquo;ll add some functionality with real,
+externally-observable effects: printing. Specifically, we&rsquo;ll write functions
+that print Sky data to a C stream using representations that can be read back in
+to construct equivalent objects<sup id="fnref:terminology"><a class="footnote-ref" href="#fn:terminology">1</a></sup>.</p>
+<p>You can see the code as of this post <a href="https://github.com/johnmastro/sky/tree/sky-0.0.3">here</a>, and a comparison against last
+time <a href="https://github.com/johnmastro/sky/compare/sky-0.0.2...sky-0.0.3">here</a>.</p>
+<p>At the highest level, we have a function <code>print</code> that dispatches to an
+appropriate function based on the type of value being printed, plus <code>println</code>,
+which calls <code>print</code> and then prints a newline.</p>
+<pre><code>void print(FILE *stream, value_t value)
+{
+    enum type_tag tag = get_type_tag(value);
+
+    switch(tag) {
+    case TAG_INT:    print_integer(stream, value); return;
+    case TAG_CHAR:   print_character(stream, value); return;
+    case TAG_STRING: print_string(stream, value); return;
+    case TAG_SYMBOL: print_symbol(stream, value); return;
+    case TAG_LIST:   print_list(stream, value); return;
+    default:         abort();
+    }
+}
+
+void println(FILE *stream, value_t value)
+{
+    print(stream, value);
+    putc('\n', stream);
+}
+</code></pre>
+<p>The function to print an integer is the least interesting of them, especially
+since we&rsquo;re not going to support printing in different bases.</p>
+<pre><code>static void print_integer(FILE *stream, value_t value)
+{
+    intptr_t i = integer_data(value);
+    fprintf(stream, "%" PRIdPTR, i);
+}
+</code></pre>
+<p>It may be worth noting that <code>PRIdPTR</code> is a preprocessor macro, defined in
+<a href="http://pubs.opengroup.org/onlinepubs/007904975/basedefs/inttypes.h.html"><code>inttypes.h</code></a> along with several others for the same purpose, that
+expands to whatever the correct format specifier is for <code>intptr_t</code> on that
+platform. On my <code>x86-64</code> machine running Fedora, it expands to <code>"ld"</code>, making
+(via the automatic concatenation of adjacent string literals) <code>"%" PRIdPTR</code>
+equivalent to <code>"%ld"</code> (the format specifier for a <code>long</code>).</p>
+<p>The function to print a character is more involved because it has to handle a
+few different scenarios. Borrowing the syntax from Common Lisp, all character
+literals start with <code>#\</code>, followed by:</p>
+<ul>
+<li>If it&rsquo;s a non-whitespace character with a graphical representation, the
+  character itself. For example, the character &ldquo;a&rdquo; is printed as <code>#\a</code>, and &ldquo;!&rdquo;
+  is printed as <code>#\!</code>.</li>
+<li>If it&rsquo;s a whitespace character, a symbolic representation based on the
+  character&rsquo;s name. For example, the space character is printed as <code>#\space</code>,
+  and newline as <code>#\newline</code>.</li>
+<li>Otherwise, the character&rsquo;s numeric value in hexadecimal, prefixed by &ldquo;x&rdquo;. For
+  example, the character code of ASCII <code>DEL</code> is 7F in hexadecimal (127 in
+  decimal), so it&rsquo;s printed as <code>#\x7F</code>.</li>
+</ul>
+<p>Here it is:</p>
+<pre><code>static void print_character(FILE *stream, value_t value)
+{
+    int c = character_data(value);
+
+    fputs("#\\", stream);
+
+    if (isgraph(c)) {
+        putc(c, stream);
+        return;
+    }
+
+    switch(c) {
+    case '\b': fputs("backspace", stream); return;
+    case '\t': fputs("tab", stream); return;
+    case '\n': fputs("newline", stream); return;
+    case '\v': fputs("vtab", stream); return;
+    case '\f': fputs("formfeed", stream); return;
+    case '\r': fputs("return", stream); return;
+    case ' ':  fputs("space", stream); return;
+    default:   fprintf(stream, "x%02X", c); return;
+    }
+}
+</code></pre>
+<p>The functions to print strings and symbols both call out to <code>print_string_1</code> and
+pass a <code>bool</code> argument, <code>symbol</code>, to identify whether the value should be
+printed as a symbol. The only difference here is that strings are printed within
+double-quotes while symbols aren&rsquo;t<sup id="fnref:symbol-problem"><a class="footnote-ref" href="#fn:symbol-problem">2</a></sup>.</p>
+<p>Like in <code>print_character</code>, we have a <code>switch</code> statement to control how certain
+characters are represented. This time we print a space as, well, a space, and
+other whitespace characters in their standard backslash-escaped string syntax.
+Because we want what we print to be valid syntax (so it can be <code>read</code> back in),
+we also backslash-escape double-quotes to keep them from terminating the string
+prematurely, and backslash characters to keep them from being interpreted as
+escapes. Characters without printable representations are again represented in
+hex, like <code>\x7F</code>.</p>
+<pre><code>static void print_string_1(FILE *stream, value_t value, bool symbol)
+{
+    ptrdiff_t len = string_length(value);
+
+    if (!symbol) putc('"', stream);
+
+    for (ptrdiff_t i = 0; i &lt; len; i++) {
+        int c = string_ref(value, i);
+
+        switch(c) {
+        case '\b': fputs("\\b", stream); break;
+        case '\t': fputs("\\t", stream); break;
+        case '\n': fputs("\\n", stream); break;
+        case '\v': fputs("\\v", stream); break;
+        case '\f': fputs("\\f", stream); break;
+        case '\r': fputs("\\r", stream); break;
+        case '"':  fputs("\\\"", stream); break;
+        case '\\': fputs("\\\\", stream); break;
+        default:
+            if (isprint(c))
+                putc(c, stream);
+            else
+                fprintf(stream, "\\x%02X", c);
+            break;
+        }
+    }
+
+    if (!symbol) putc('"', stream);
+}
+</code></pre>
+<p>Then we have the actual <code>print_string</code> and <code>print_symbol</code> functions, which both
+simply call <code>print_string_1</code> with appropriate arguments.</p>
+<pre><code>static void print_string(FILE *stream, value_t value)
+{
+    print_string_1(stream, value, false);
+}
+
+static void print_symbol(FILE *stream, value_t value)
+{
+    value_t name = symbol_name(value);
+    print_string_1(stream, name, true);
+}
+</code></pre>
+<p>Last but not least we have <code>print_list</code>. In Lisps, lists are printed delimited
+between parentheses, with a space between each element. A list containing the
+strings &ldquo;cool&rdquo; and &ldquo;list&rdquo; will therefore look like <code>("cool" "list")</code>. Besides
+printing those delimiters, it just loops through the list and invokes <code>print</code> on
+each element.</p>
+<pre><code>static void print_list(FILE *stream, value_t value)
+{
+    putc('(', stream);
+
+    while (value != NIL) {
+        value_t fst = first(value);
+        print(stream, fst);
+        value = rest(value);
+        if (value != NIL)
+            putc(' ', stream);
+    }
+
+    putc(')', stream);
+}
+</code></pre>
+<h2>Error handling and the lack thereof</h2>
+<p>C I/O functions like <code>putc</code>, <code>fputs</code>, and <code>fprintf</code> can all report errors via
+their return value. We&rsquo;re ignoring that for now, but a production language would
+certainly need to pay attention and respond appropriately.</p>
+<h2>Convenient printing in GDB</h2>
+<p>If you use these printing functions in GDB, you will quickly get tired of typing
+<code>call println(stdout, value)</code>. Luckily, GDB supports <a href="https://sourceware.org/gdb/onlinedocs/gdb/Define.html">user-defined
+commands</a>, so we can make things more convenient.</p>
+<p>I added a file <code>.gdbinit</code> in Sky&rsquo;s <code>src</code> directory which defines two commands:</p>
+<pre><code>define pp
+  set $tmp = $arg0
+  call println(stdout, $tmp)
+end
+
+define pr
+  pp $
+end
+</code></pre>
+<p>The command <code>pp</code> prints its argument, and <code>pr</code> calls <code>pp</code> on the last output.
+Here&rsquo;s a quick demo:</p>
+<pre><code>~/code/sky/src/&gt; gdb sky
+(gdb) source .gdbinit
+(gdb) br main
+(gdb) r
+(gdb) set $s1 = make_string("cool", 4)
+(gdb) set $s2 = make_string("list", 4)
+(gdb) set $list = cons($s1, cons($s2, NIL))
+(gdb) pp $list
+("cool" "list")
+(gdb) print make_symbol(make_string("sky", 3))
+$1 = 6317808
+(gdb) pr
+sky
+</code></pre>
+<p>If you add the <code>src</code> directory to GDB&rsquo;s <a href="https://sourceware.org/gdb/onlinedocs/gdb/Auto_002dloading-safe-path.html">auto-loading safe path</a>, it
+will source <code>.gdbinit</code> automatically (meaning you won&rsquo;t need to type <code>source
+.gdbinit</code> as I did in the first GDB command above).</p>
+<h2>Next time</h2>
+<p>That&rsquo;s all for now. Next time we&rsquo;ll add the functionality to <code>read</code> Sky data.</p>
+<div class="footnote">
+<hr>
+<ol>
+<li id="fn:terminology">
+<p>This is also called <a href="https://en.wikipedia.org/wiki/Serialization">serialization</a> to differentiate it from writing
+arbitrary bytes. Different languages make this distinction in different
+ways. In Common Lisp terms, we&rsquo;re writing <code>prin1</code> as opposed to <code>write</code> or
+<code>princ</code>. In Python terms, we&rsquo;re writing an equivalent to <code>print("%r" % obj)</code>
+as opposed to <code>print("%s" % obj)</code>.&#160;<a class="footnote-backref" href="#fnref:terminology" title="Jump back to footnote 1 in the text">&#8617;&#xFE0E;</a></p>
+</li>
+<li id="fn:symbol-problem">
+<p>Note that there&rsquo;s a problem with this. A symbol can have <em>any</em> string as its
+name, and in this implementation symbols with certain names can&rsquo;t be read
+back in correctly. For instance, a symbol with the name <code>"foo bar"</code>, would
+be printed <code>foo bar</code>, but that would be read back in as two symbols (<code>foo</code>
+and <code>bar</code>). We&rsquo;ll come back to this later.&#160;<a class="footnote-backref" href="#fnref:symbol-problem" title="Jump back to footnote 2 in the text">&#8617;&#xFE0E;</a></p>
+</li>
+</ol>
+</div>
+  </div>
+</article>
+    </main>
+    <footer>
+      <div class="copyright">
+        &copy; 2018 John Mastro
+      </div>
+      <div class="contact">
+        <span id="contact-email">jbm@[this domain]</span>
+      </div>
+    </footer>
+    <script src="/static/email.js"></script>
+  </body>
+</html>

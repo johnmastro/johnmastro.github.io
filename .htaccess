@@ -1,0 +1,8 @@
+AddDefaultCharset UTF-8
+
+ErrorDocument 401 /401.html
+ErrorDocument 403 /403.html
+ErrorDocument 404 /404.html
+ErrorDocument 500 /500.html
+
+Redirect 301 /2018/02/sky-0.0.1.html https://jbm.io/2018/02/sky-0-0-1.html

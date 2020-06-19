@@ -1,0 +1,166 @@
+@font-face {
+  font-family: 'Open Sans';
+  font-style: normal;
+  font-weight: 400;
+  src: local('Open Sans'), local('OpenSans'), url(/static/font/opensans-regular.ttf) format('truetype');
+}
+
+@font-face {
+  font-family: 'Open Sans';
+  font-style: normal;
+  font-weight: 700;
+  src: local('Open Sans Bold'), local('OpenSans-Bold'), url(/static/font/opensans-bold.ttf) format('truetype');
+}
+
+@font-face {
+  font-family: 'Open Sans';
+  font-style: italic;
+  font-weight: 400;
+  src: local('Open Sans Italic'), local('OpenSans-Italic'), url(/static/font/opensans-italic.ttf) format('truetype');
+}
+
+@font-face {
+  font-family: 'Open Sans';
+  font-style: italic;
+  font-weight: 700;
+  src: local('Open Sans Bold Italic'), local('OpenSans-BoldItalic'), url(/static/font/opensans-bolditalic.ttf) format('truetype');
+}
+
+body {
+    color: black;
+    font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+    padding: 0px 1em;
+    margin: 0px auto 0px auto;
+    max-width: 45em;
+}
+
+header#main-header {
+    border-bottom: 2px solid black;
+    margin-bottom: 30px;
+    padding: 12px 0px 12px 0px;
+}
+
+header#main-header nav {
+    text-align: right;
+}
+
+header#main-header nav a {
+    color: black;
+    font-size: 1.125rem;
+    font-weight: bold;
+    margin-left: 12px;
+    text-decoration: none;
+}
+
+div#logo a {
+    color: white;
+    background-color: #6495ed;
+    float: left;
+    padding: 0 0.5em;
+    font-size: 1.125rem;
+    text-decoration: none;
+}
+
+a {
+    color: #6495ed;
+    text-decoration: none;
+}
+
+a:visited {
+    color: #00ced1;
+}
+
+h1 { font-size: 1.5rem;  }
+h2 { font-size: 1.25rem; }
+h3 { font-size: 1rem;    }
+
+h1.page-title, h1.article-title {
+    margin-bottom: 0px;
+}
+
+p.article-date {
+    color: #555;
+    margin: 0px;
+    font-size: 0.825rem;
+}
+
+blockquote {
+    margin: 0 18px 0 18px;
+    padding-left: 10px;
+    border-left: 4px solid #c8c8c8;
+}
+
+pre, code, kbd, tt {
+    background-color: #fafafa;
+    border: 1px solid #c8c8c8;
+    padding-left: 2px;
+    padding-right: 2px;
+    font-family: Menlo, "Deja Vu Sans Mono", Consolas, Inconsolata, monospace;
+    font-size: 0.875rem;
+}
+
+pre code {
+    display: block;
+    border: none;
+    padding: 4px;
+    line-height: 1.2;
+    overflow-x: auto;
+}
+
+table {
+    border-collapse: collapse;
+}
+
+table, th, td {
+    border: 1px solid #c8c8c8;
+}
+
+th, td {
+    text-align: center;
+    padding: 0.125em 0.5em 0.125em 0.5em;
+}
+
+table#archive-entries, table#archive-entries th, table#archive-entries td {
+    border: none;
+}
+
+table#archive-entries th, table#archive-entries td {
+    text-align: left;
+}
+
+td.archive-entry-date {
+    white-space: nowrap;
+}
+
+td.archive-entry-title {
+    padding-left: 1em;
+}
+
+del, s, strike {
+    text-decoration: line;
+}
+
+div.error-content {
+    min-height: 300px;
+}
+
+div.footnotes {
+    font-size: 0.875rem;
+}
+
+footer {
+    border-top: solid 2px black;
+    color: #555;
+    font-size: 0.8rem;
+    margin: 30px 0px 15px 0px;
+    padding: 12px 0px 12px 0px;
+}
+
+footer div.copyright {
+    float: left;
+}
+
+footer div.contact {
+    float: right;
+    text-align: right;
+}

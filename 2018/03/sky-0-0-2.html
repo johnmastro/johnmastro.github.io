@@ -1,0 +1,220 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-43613920-1"></script>
+    <script src="/static/gtag.js"></script>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="First of all, I apologize if you’re subscribed to the feed and are seeing duplicates of the last two posts. In both cases I changed things after publication that resulted in a different feed entry ID, causing many feed readers to treat the changed entry as a new entry …">
+    <meta name="author" content="John Mastro">
+    <title>John Mastro: Sky 0.0.2: Immediate integers and characters</title>
+    <link rel="alternate" type="application/atom+xml" href="/None" title="John Mastro Atom Feed">
+    <!--[if lt IE 9]>
+    <script src="/static/html5shiv.min.js"></script>
+    <![endif]-->
+    <link rel="stylesheet" href="/static/normalize.min.css">
+    <link rel="stylesheet" href="/static/base.min.css">
+    <link rel="stylesheet" href="/static/style.css">
+    <!-- Favicon variations and markup generated via
+         https://realfavicongenerator.net -->
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <link rel="manifest" href="/site.webmanifest">
+    <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+    <meta name="msapplication-TileColor" content="#2d89ef">
+    <meta name="theme-color" content="#000000">
+  </head>
+  <body>
+    <header id="main-header">
+      <div id="logo">
+        <a href="/">John Mastro</a>
+      </div>
+      <nav>
+        <a href="/archive.html">archive</a>
+      </nav>
+    </header>
+    <main>
+<article>
+  <header>
+    <h1 class="article-title">Sky 0.0.2: Immediate integers and characters</h1>
+    <p class="article-date">
+      <time class="published" datetime="2018-03-06T18:02:00-08:00">
+        2018-03-06
+      </time>
+    </p>
+  </header>
+  <div class="article-content">
+    <p>First of all, I apologize if you&rsquo;re subscribed to the feed and are seeing
+duplicates of the last two posts. In both cases I changed things after
+publication that resulted in a different feed entry ID, causing many feed
+readers to treat the changed entry as a <em>new</em> entry. I think I have things
+sorted out well enough now that it won&rsquo;t be an issue going forward.</p>
+<p><a href="https://jbm.io/2018/02/sky-0-0-1.html">Last time</a> we wrote constructors and accessors for a handful of basic data
+types, all of them dynamically <a href="https://stackoverflow.com/questions/79923/what-and-where-are-the-stack-and-heap">allocated in the heap (as opposed to on the
+stack)</a>. This time we&rsquo;re going to change the representation of
+integers and characters so that they&rsquo;re immediate values and don&rsquo;t require
+dynamic allocation. You can see the code as of this post <a href="https://github.com/johnmastro/sky/tree/sky-0.0.2">on the sky-0.0.2
+tag</a>, and the log of changes since the first time <a href="https://github.com/johnmastro/sky/compare/sky-0.0.1...sky-0.0.2">here</a>.</p>
+<p>The technique we&rsquo;ll use to do this is widely used in programming language
+implementations, operating systems, and &ldquo;low level&rdquo; software more generally. It
+starts from the observation that the memory returned by functions like <code>malloc</code>
+must be suitably <a href="https://en.wikipedia.org/wiki/Data_structure_alignment#Definitions">aligned</a> for any (C) object.</p>
+<p>As of C11, there&rsquo;s a type <a href="http://en.cppreference.com/w/c/types/max_align_t"><code>max_align_t</code></a> (defined in <code>stddef.h</code>)
+whose alignment is at least as large as that of every scalar type, plus an
+operator <a href="http://en.cppreference.com/w/c/language/_Alignof"><code>alignof</code></a> (defined in <code>stdalign.h</code>) which will tell us the
+alignment requirement of a given type. We can use them to write a small test
+program that will tell us what alignment we can count on from <code>malloc</code>:</p>
+<pre><code>#include &lt;stdio.h&gt;
+#include &lt;stddef.h&gt;
+#include &lt;stdalign.h&gt;
+
+int main(void)
+{
+    printf("alignof(max_align_t) = %zu\n", alignof(max_align_t));
+    return 0;
+}
+</code></pre>
+<p>In practice, the answer on a 64-bit machine will be 16 (bytes). The upshot is
+that memory addresses returned by functions like <code>malloc</code> will always be
+divisible by 16. Put another way, the 4 least significant bits of such memory
+addresses will always be zero (because 16 is <code>2^4</code>). On a 32-bit machine, the
+minimum alignment will be 8 bytes, making the 3 least significant bits zero. You
+can also <a href="https://www.gnu.org/software/libc/manual/html_node/Aligned-Memory-Blocks.html">requested more highly-aligned memory</a> using special
+allocation functions.</p>
+<p>The bottom line is that at least the three least significant bits of our <code>struct
+object *</code> pointers will always be zero<sup id="fnref:small-machines"><a class="footnote-ref" href="#fn:small-machines">1</a></sup>, which means we can use
+those bits for something else. If we use all three bits we can store 8 possible
+values there, but for now we&rsquo;ll only use two bits, for four possible values.
+We&rsquo;ll use them to store a type tag, with the following scheme:</p>
+<pre><code>Binary | Decimal | Type
+-------|---------|-----------
+    00 |       0 | Pointer
+    01 |       1 | Integer
+    10 |       2 | Character
+    11 |       3 | Unused
+</code></pre>
+<p>If the two least significant bits are <code>00</code>, the value represents a pointer
+(specifically, a <code>struct object *</code>). If they&rsquo;re <code>01</code> the object is an integer,
+if they&rsquo;re <code>10</code> it&rsquo;s a character, and we&rsquo;ll leave <code>11</code> unused for now.</p>
+<p>Taking a step back for a moment, while we could tag the <code>struct object *</code> values
+directly, things will be cleaner and clearer if we instead introduce a C type
+that&rsquo;s <em>either</em> a pointer <em>or</em> an immediate value. We introduce <code>value_t</code> to
+fill that roll:</p>
+<pre><code>typedef intptr_t value_t;
+</code></pre>
+<p>It&rsquo;s a <code>typedef</code> of <code>intptr_t</code>, which is a signed integer large enough to hold a
+pointer. The downside is a bunch of extra casts, but they&rsquo;ll be well-contained
+in the constructors and accesssors.</p>
+<p>Okay, so how do we construct one of these tagged objects? We shift the value
+left by two bits and then add the tag.</p>
+<pre><code>#define TAG_BITS 2
+#define PTR_BITS (sizeof(intptr_t) * CHAR_BIT)
+#define VAL_BITS (PTR_BITS - TAG_BITS)
+#define VAL_MASK (-(1 &lt;&lt; TAG_BITS))
+
+value_t make_integer(intptr_t value)
+{
+    return ((uintptr_t)value &lt;&lt; TAG_BITS) + TAG_INT;
+}
+</code></pre>
+<p>And then to get the original value back we simply shift right by two bits.</p>
+<pre><code>intptr_t integer_data(value_t value)
+{
+    return value &gt;&gt; TAG_BITS;
+}
+</code></pre>
+<p>Of course we also need to teach <code>get_type_tag</code> about these immediate values.</p>
+<pre><code>enum type_tag get_type_tag(value_t value)
+{
+    if (value == NIL) return TAG_LIST;
+
+    enum type_tag tag = value &amp; ~VAL_MASK;
+
+    if (!tag)
+        tag = ((struct object *)value)-&gt;tag;
+
+    return tag;
+}
+</code></pre>
+<p>If your background is in higher-level dynamic programming languages like Python,
+you may not be very familiar with these <a href="https://en.wikipedia.org/wiki/Bitwise_operations_in_C">bitwise operations</a>. I wasn&rsquo;t,
+anyway, until I started poking around in programming language implementations.
+My advice is to read up on them a bit and then spend some time playing around in
+GDB. Conveniently, you can use <code>print /t</code> (which can be abbreviated to <code>p/t</code>) to
+print the binary representation of a value, which makes it easy to see the
+effect of bitwise operations.</p>
+<p>Here&rsquo;s an example session experimenting with the bitwise operations we use to
+tag and untag an integer:</p>
+<pre><code>(gdb) set $i = 123
+(gdb) p/t $i
+$1 = 1111011
+(gdb) p/t $i &lt;&lt; 2
+$2 = 111101100
+(gdb) set $t = ($i &lt;&lt; 2) + 1
+(gdb) p/t $t
+$3 = 111101101
+(gdb) p/t $t &gt;&gt; 2
+$4 = 1111011
+(gdb) p $t &gt;&gt; 2
+$5 = 123
+</code></pre>
+<p>Since we&rsquo;re using two bits for the type tag, we only have either 62 or 30 bits
+left over for integer values. We can define preprocessor macros to identify the
+largest and smallest values we can represent.</p>
+<pre><code>#define MOST_POSITIVE_INT (INTPTR_MAX &gt;&gt; TAG_BITS)
+#define MOST_NEGATIVE_INT (-1 - MOST_POSITIVE_INT)
+</code></pre>
+<p>We&rsquo;re not going to do any error checking in <code>make_integer</code> yet, but eventually
+we&rsquo;ll want to signal in error if an operation would result in an integer too
+large for us to represent. (In a production language, you would hopefully
+promote it to a &ldquo;bignum&rdquo; - an arbitrary precision integer - but we probably
+won&rsquo;t go there).</p>
+<p>For objects that will still be dynamically allocated on the heap, the only
+change is that we cast the <code>struct object *</code> to <code>value_t</code> when we return it, and
+then in the accessors cast back to <code>struct object *</code> so we can dereference it.</p>
+<pre><code>value_t make_string(const char *data, ptrdiff_t len)
+{
+    // Construct the `struct object *` the same as before
+    return (value_t)obj;
+}
+
+const unsigned char *string_data(value_t value)
+{
+    return ((struct object *)value)-&gt;u.string.data;
+}
+</code></pre>
+<p>To sum things up, we now have the following arrangement: At the C level, a Sky
+value is represented by a <code>value_t</code>. Each <code>value_t</code> is either an immediate value
+(an integer or character), or a <code>struct object *</code>. To access the immediate
+value, we untag it; to access a <code>struct object</code>, we perform the cast and
+dereference the pointer.</p>
+<p>You can take this technique a lot further than we have here. We could get rid of
+the <code>tag</code> member of <code>struct object</code> entirely and tag all pointers rather than
+just immediate values. However, my hope is that this more minimal version gets
+us the low-hanging fruit and demonstrates the technique while keeping things as
+clear as possible.</p>
+<div class="footnote">
+<hr>
+<ol>
+<li id="fn:small-machines">
+<p>I am ignoring sub-32 bit machines, which I think is reasonable in this
+context.&#160;<a class="footnote-backref" href="#fnref:small-machines" title="Jump back to footnote 1 in the text">&#8617;&#xFE0E;</a></p>
+</li>
+</ol>
+</div>
+  </div>
+</article>
+    </main>
+    <footer>
+      <div class="copyright">
+        &copy; 2018 John Mastro
+      </div>
+      <div class="contact">
+        <span id="contact-email">jbm@[this domain]</span>
+      </div>
+    </footer>
+    <script src="/static/email.js"></script>
+  </body>
+</html>

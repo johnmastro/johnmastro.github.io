@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-43613920-1"></script>
+    <script src="/static/gtag.js"></script>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="This is part of a series of posts about writing a simple interpreter for a small Lisp-like language. Please see here for an overview of the series. Last time we made all symbols readable. Now we’re going to start working towards a symbol table, and our first step is …">
+    <meta name="author" content="John Mastro">
+    <title>John Mastro: Sky 0.0.7: Basic equality</title>
+    <link rel="alternate" type="application/atom+xml" href="/None" title="John Mastro Atom Feed">
+    <!--[if lt IE 9]>
+    <script src="/static/html5shiv.min.js"></script>
+    <![endif]-->
+    <link rel="stylesheet" href="/static/normalize.min.css">
+    <link rel="stylesheet" href="/static/base.min.css">
+    <link rel="stylesheet" href="/static/style.css">
+    <!-- Favicon variations and markup generated via
+         https://realfavicongenerator.net -->
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <link rel="manifest" href="/site.webmanifest">
+    <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+    <meta name="msapplication-TileColor" content="#2d89ef">
+    <meta name="theme-color" content="#000000">
+  </head>
+  <body>
+    <header id="main-header">
+      <div id="logo">
+        <a href="/">John Mastro</a>
+      </div>
+      <nav>
+        <a href="/archive.html">archive</a>
+      </nav>
+    </header>
+    <main>
+<article>
+  <header>
+    <h1 class="article-title">Sky 0.0.7: Basic equality</h1>
+    <p class="article-date">
+      <time class="published" datetime="2018-05-08T14:10:00-07:00">
+        2018-05-08
+      </time>
+    </p>
+  </header>
+  <div class="article-content">
+    <p>This is part of a series of posts about writing a simple interpreter for a small
+Lisp-like language. Please see <a href="https://jbm.io/sky.html">here</a> for an overview of the series.</p>
+<p><a href="https://jbm.io/2018/04/sky-0-0-6.html">Last time</a> we made all symbols readable. Now we&rsquo;re going to start
+working towards a symbol table, and our first step is to define <code>equal</code>.</p>
+<p>You can see the code as of this post <a href="https://github.com/johnmastro/sky/tree/sky-0.0.7">here</a>, and a comparison against last
+time <a href="https://github.com/johnmastro/sky/compare/sky-0.0.6...sky-0.0.7">here</a>.</p>
+<p>There&rsquo;s nothing especially interesting about <code>equal</code>, so today I&rsquo;ll mostly refer
+you to <a href="https://github.com/johnmastro/sky/blob/sky-0.0.7/src/equal.c"><code>equal.c</code> in the repository</a>. For integers, characters, and
+symbols<sup id="fnref:symbols"><a class="footnote-ref" href="#fn:symbols">1</a></sup>, we can defer to C&rsquo;s equality operator (<code>==</code>). For strings, we
+first compare their lengths (two strings of different length can&rsquo;t be equal) and
+then defer to C&rsquo;s <code>memcmp</code> to compare their contents.</p>
+<p>Lists are the most interesting case, because their contents are Sky values. If
+the two lists are <code>nil</code>, they&rsquo;re equal. If one is <code>nil</code> and the other isn&rsquo;t,
+they&rsquo;re not equal. If the <code>first</code> items of the two lists are not <code>equal</code>, then
+the lists aren&rsquo;t equal. Otherwise we repeat the process on the <code>rest</code> of both
+lists until we reach a conclusion.</p>
+<p>There are a number of things that would make for a more interesting <code>equal</code>,
+like supporting an arbitrary number of arguments, comparing across multiple
+sequence types, comparisons involving floating point numbers, etc., but none of
+those are relevant for us yet, so we&rsquo;re getting away with a very simple
+implementation.</p>
+<h2>Next time</h2>
+<p>Next time we&rsquo;ll implement a hash function.</p>
+<div class="footnote">
+<hr>
+<ol>
+<li id="fn:symbols">
+<p>Symbols are only considered equal if they&rsquo;re pointer-equal, i.e. the exact
+same object in memory. This works by <a href="https://en.wikipedia.org/wiki/String_interning">interning</a> symbols, which requires a
+symbol table of some sort, which is what we&rsquo;re working on now.&#160;<a class="footnote-backref" href="#fnref:symbols" title="Jump back to footnote 1 in the text">&#8617;&#xFE0E;</a></p>
+</li>
+</ol>
+</div>
+  </div>
+</article>
+    </main>
+    <footer>
+      <div class="copyright">
+        &copy; 2018 John Mastro
+      </div>
+      <div class="contact">
+        <span id="contact-email">jbm@[this domain]</span>
+      </div>
+    </footer>
+    <script src="/static/email.js"></script>
+  </body>
+</html>

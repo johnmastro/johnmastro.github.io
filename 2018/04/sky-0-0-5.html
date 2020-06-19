@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-43613920-1"></script>
+    <script src="/static/gtag.js"></script>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="This is part of a series of posts about writing a simple interpreter for a small Lisp-like language. Please see here for an overview of the series. Last time we added the ability to read Sky data from a C stream. This time we’re doing something with a smaller …">
+    <meta name="author" content="John Mastro">
+    <title>John Mastro: Sky 0.0.5: A not-quite-REPL</title>
+    <link rel="alternate" type="application/atom+xml" href="/None" title="John Mastro Atom Feed">
+    <!--[if lt IE 9]>
+    <script src="/static/html5shiv.min.js"></script>
+    <![endif]-->
+    <link rel="stylesheet" href="/static/normalize.min.css">
+    <link rel="stylesheet" href="/static/base.min.css">
+    <link rel="stylesheet" href="/static/style.css">
+    <!-- Favicon variations and markup generated via
+         https://realfavicongenerator.net -->
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <link rel="manifest" href="/site.webmanifest">
+    <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+    <meta name="msapplication-TileColor" content="#2d89ef">
+    <meta name="theme-color" content="#000000">
+  </head>
+  <body>
+    <header id="main-header">
+      <div id="logo">
+        <a href="/">John Mastro</a>
+      </div>
+      <nav>
+        <a href="/archive.html">archive</a>
+      </nav>
+    </header>
+    <main>
+<article>
+  <header>
+    <h1 class="article-title">Sky 0.0.5: A not-quite-REPL</h1>
+    <p class="article-date">
+      <time class="published" datetime="2018-04-27T14:02:00-07:00">
+        2018-04-27
+      </time>
+    </p>
+  </header>
+  <div class="article-content">
+    <p>This is part of a series of posts about writing a simple interpreter for a small
+Lisp-like language. Please see <a href="https://jbm.io/sky.html">here</a> for an overview of the series.</p>
+<p><a href="https://jbm.io/2018/04/sky-0-0-4.html">Last time</a> we added the ability to read Sky data from a C stream.
+This time we&rsquo;re doing something with a smaller scope: adding some tests for
+reading and printing, plus a note-quite-<a href="https://en.wikipedia.org/wiki/Read-eval-print_loop">REPL</a> (specifically, without the
+&ldquo;eval&rdquo; part).</p>
+<p>You can see the code as of this post <a href="https://github.com/johnmastro/sky/tree/sky-0.0.5">here</a>, and a comparison against last
+time <a href="https://github.com/johnmastro/sky/compare/sky-0.0.4...sky-0.0.5">here</a>.</p>
+<h2>The tests</h2>
+<p>For the tests, we start with <a href="https://github.com/johnmastro/sky/tree/sky-0.0.5/tst/data">a directory</a> containing some valid examples
+of Sky data. Specifically, we have:</p>
+<ul>
+<li>A string containing every ASCII character</li>
+<li>A list containing every ASCII character</li>
+<li>The most-positive Sky integer (on 64-bit machines)</li>
+<li>The least-positive Sky integer (on 64-bit machines)</li>
+</ul>
+<p>Then we have <a href="https://github.com/johnmastro/sky/blob/sky-0.0.5/tst/run.sh">a script</a> that checks whether <code>read</code> and <code>print</code> are
+consistent. For each of the test files, it uses the <code>sky</code> binary to read the
+file and then print the data to a new file, and then uses <code>diff</code> to check that
+the file we printed is byte-for-byte identical to the file we read. If it&rsquo;s not,
+it exits with an error code.</p>
+<p>The final piece of the puzzle is in the <a href="https://github.com/johnmastro/sky/blob/sky-0.0.5/Makefile">makefile</a>, which has a new <code>check</code>
+rule:</p>
+<pre><code>check:
+    @tst/run.sh || (echo "Tests failed" &amp;&amp; exit 1)
+</code></pre>
+<p>The end result is that we can run <code>make all check</code>, which will build Sky and
+then test that reading and printing are working as we expect.</p>
+<p>We could go a lot further with testing, but I&rsquo;m keeping it minimal for now.
+Testing will be easier once we can test Sky in Sky itself.</p>
+<h2>The not-quite-REPL</h2>
+<p>The function to implement a REPL-minus-eval is very simple now that we have both
+the <code>read</code> and <code>print</code> parts:</p>
+<pre><code>static void run_repl(void)
+{
+    value_t value;
+    bool eof = false;
+
+    fputs("Welcome to Sky. Use control-c to exit.\n", stdout);
+
+    for (;;) {
+        fprintf(stdout, "&gt; ");
+        fflush(stdout);
+        value = read_from_stream(stdin, &amp;eof);
+        if (eof) break;
+        println(stdout, value);
+    }
+
+    fputs("\nGoodbye\n", stdout);
+}
+</code></pre>
+<p>The result is that we can interactively send expressions to Sky, which will read
+them and print them back. The important thing is that it&rsquo;s not just echoing the
+text; the text is being read, resulting in Sky values, which are then printed.</p>
+<p>Here&rsquo;s a brief example session:</p>
+<pre><code>~/code/sky/&gt; ./src/sky
+Welcome to Sky. Use control-c to exit.
+&gt; 1
+1
+&gt; one
+one
+&gt; "foo\nbar"
+"foo\nbar"
+&gt; (#\a #\b #\c)
+(#\a #\b #\c)
+&gt; ^C
+Goodbye
+</code></pre>
+<p>That&rsquo;s all for this time.</p>
+<h2>Next time</h2>
+<p>Next time I think we&rsquo;ll try to solve the problem I referenced <a href="https://jbm.io/2018/03/sky-0-0-3.html">when discussing
+printing</a>, which is that there are currently some symbols which can
+be printed but not read.</p>
+  </div>
+</article>
+    </main>
+    <footer>
+      <div class="copyright">
+        &copy; 2018 John Mastro
+      </div>
+      <div class="contact">
+        <span id="contact-email">jbm@[this domain]</span>
+      </div>
+    </footer>
+    <script src="/static/email.js"></script>
+  </body>
+</html>

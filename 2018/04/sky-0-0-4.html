@@ -1,0 +1,190 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-43613920-1"></script>
+    <script src="/static/gtag.js"></script>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="This is part of a series of posts about writing a simple interpreter for a small Lisp-like language. Please see here for an overview of the series. Last time we added the ability to print Sky data to a C stream. This time we’re adding the inverse, the ability …">
+    <meta name="author" content="John Mastro">
+    <title>John Mastro: Sky 0.0.4: Reading data</title>
+    <link rel="alternate" type="application/atom+xml" href="/None" title="John Mastro Atom Feed">
+    <!--[if lt IE 9]>
+    <script src="/static/html5shiv.min.js"></script>
+    <![endif]-->
+    <link rel="stylesheet" href="/static/normalize.min.css">
+    <link rel="stylesheet" href="/static/base.min.css">
+    <link rel="stylesheet" href="/static/style.css">
+    <!-- Favicon variations and markup generated via
+         https://realfavicongenerator.net -->
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <link rel="manifest" href="/site.webmanifest">
+    <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+    <meta name="msapplication-TileColor" content="#2d89ef">
+    <meta name="theme-color" content="#000000">
+  </head>
+  <body>
+    <header id="main-header">
+      <div id="logo">
+        <a href="/">John Mastro</a>
+      </div>
+      <nav>
+        <a href="/archive.html">archive</a>
+      </nav>
+    </header>
+    <main>
+<article>
+  <header>
+    <h1 class="article-title">Sky 0.0.4: Reading data</h1>
+    <p class="article-date">
+      <time class="published" datetime="2018-04-26T15:25:00-07:00">
+        2018-04-26
+      </time>
+      | Updated
+      <time class="modified" datetime="2018-04-27T14:15:00-07:00">
+        2018-04-27
+      </time>
+    </p>
+  </header>
+  <div class="article-content">
+    <p>This is part of a series of posts about writing a simple interpreter for a small
+Lisp-like language. Please see <a href="https://jbm.io/sky.html">here</a> for an overview of the series.</p>
+<p><a href="https://jbm.io/2018/03/sky-0-0-3.html">Last time</a> we added the ability to print Sky data to a C stream.
+This time we&rsquo;re adding the inverse, the ability to read Sky data from a C
+stream. The reader is the most complex component so far, with roughly three
+times as many lines of code as the printer.</p>
+<p>You can see the code as of this post <a href="https://github.com/johnmastro/sky/tree/sky-0.0.4">here</a>, and a comparison against last
+time <a href="https://github.com/johnmastro/sky/compare/sky-0.0.3...sky-0.0.4">here</a>.</p>
+<p>For various reasons, I have less free time than I foresaw when I first started
+this series of posts. However, I don&rsquo;t want to stop or pause the series, at
+least not until we&rsquo;ve implemented a basic evaluator. Thus, in an attempt to keep
+things moving, I&rsquo;m going to try to keep the posts relatively brief, perhaps
+skipping some things I would have liked to include.</p>
+<h2>A brief overview</h2>
+<p>At a high level <code>read.c</code>, contains a few distinct groups of functions:</p>
+<ul>
+<li><code>read_next_char</code>: takes a stream (<code>FILE *</code>) argument, skips over whitespace and
+  comments, and returns the next character</li>
+<li><code>read_token</code>: takes a stream argument, fills a caller-provided fixed-size <code>char
+  *</code> buffer, and returns an <code>int</code> of how many bytes it read</li>
+<li><code>isdelimiter</code>: takes a character argument and returns <code>true</code> if it&rsquo;s a
+  delimiter. This is how <code>read_token</code> knows it&rsquo;s reached the end of a token</li>
+<li>Functions whose names are prefixed with <code>read_</code> (besides the two above): take
+  a stream argument and return a Sky value (<code>value_t</code>)</li>
+<li>Functions whose names are prefixed with <code>parse_</code>: take a string (<code>const char
+  *</code>) argument and return a C value</li>
+</ul>
+<p>To give a very brief example of how these pieces fit together, when reading
+<code>#\newline</code> (the character literal denoting a newline), the call flow would be:</p>
+<ul>
+<li><code>read_sexp</code><sup id="fnref:sexp"><a class="footnote-ref" href="#fn:sexp">1</a></sup> is the main internal entry-point; it&rsquo;s called for every
+  value read.</li>
+<li>It calls <code>read_next_char</code>, which returns <code>'#'</code>. We then see that the next
+  character is <code>'\'</code>, which tells us that we&rsquo;re reading a character
+  literal<sup id="fnref:dispatch"><a class="footnote-ref" href="#fn:dispatch">2</a></sup></li>
+<li>Thus, we call <code>read_character</code></li>
+<li>It calls <code>read_token</code>, which will fill a <code>char *</code> buffer with the remainder of
+  the token (in this case <code>"newline"</code>) plus a terminating null byte (to
+  guarantee that it&rsquo;s a valid C string, even though we also pass the length
+  around)</li>
+<li>Next we call <code>parse_character_name</code> on the buffer, which figures out that
+  <code>newline</code> means <code>'\n'</code> and returns it</li>
+<li>Finally, we call <code>make_character</code> (defined earlier in <code>data.c</code>), which
+  constructs the appropriate Sky value (a <code>value_t</code>) and return the result</li>
+</ul>
+<h2>A design limitation</h2>
+<p>One design limitation I wanted to maintain at this stage is that we only
+dynamically allocate memory (i.e. via <code>malloc</code> and friends) when it&rsquo;s time to
+construct a valid Sky value. This means there are maximum lengths for literal
+symbols, characters, and strings. That would be annoying or even unacceptable in
+a production language, particularly for strings, but it helps keep things simple
+for us (and has no real cost in our particular context):</p>
+<pre><code>#define READ_CHAR_BUFSZ     16
+#define READ_ATOM_BUFSZ    128
+#define READ_STRING_BUFSZ 1024
+</code></pre>
+<p>This limitation also makes <code>read_list</code> somewhat interesting, which I&rsquo;ll show
+here in full:</p>
+<pre><code>#define REST(x) (((struct object *)(x))-&gt;u.list.rest)
+
+static value_t read_list(FILE *stream)
+{
+    value_t list = NIL;
+    value_t last = NIL;
+
+    for (;;) {
+        int flag;
+        value_t value = read_sexp(stream, ')', &amp;flag);
+        value_t cell;
+
+        if (flag == ')')
+            break;
+        if (flag == EOF)
+            error("EOF while reading");
+
+        cell = cons(value, NIL);
+
+        if (list == NIL)
+            last = list = cell;
+        else
+            last = REST(last) = cell;
+    }
+
+    return list;
+}
+</code></pre>
+<p>We keep pointers to both the head of the list (<code>list</code>) and the last cons cell in
+the list (<code>last</code>). Every time we read a new element, we create a new cell, and
+mutate the <code>rest</code> link of what had been the last element to point at the new
+cell.</p>
+<p>As a result, <code>list</code> is always a valid Sky list. We&rsquo;ve declared that Sky lists
+are immutable, and here we are mutating one, but that&rsquo;s okay because the value
+is never exposed outside of <code>read_list</code> until it&rsquo;s the full, complete list.</p>
+<p>Why the limitation on dynamically allocating memory? Well, even though this is
+arguably looking too far ahead, it prevents read errors from either leaking
+memory or leaving invalid objects around that the garbage collector then has to
+deal with.</p>
+<h2>A temporary omission</h2>
+<p>If you&rsquo;re familiar with Lisp and looked at <code>read_atom</code>, you would probably
+notice something missing: <code>intern</code>.</p>
+<pre><code>static value_t read_atom(FILE *stream)
+{
+    char buf[READ_ATOM_BUFSZ];
+    int len = read_token(stream, buf, READ_ATOM_BUFSZ, false);
+    // Other stuff
+    return make_symbol(make_string(buf, len));
+}
+</code></pre>
+<p>We&rsquo;ll add symbol interning in a future installment.</p>
+<h2>Next time</h2>
+<p>Next time we&rsquo;ll add some tests for reading and printing, and add a REPL minus
+the <code>eval</code> part.</p>
+<div class="footnote">
+<hr>
+<ol>
+<li id="fn:sexp">
+<p>Symbolic expression&#160;<a class="footnote-backref" href="#fnref:sexp" title="Jump back to footnote 1 in the text">&#8617;&#xFE0E;</a></p>
+</li>
+<li id="fn:dispatch">
+<p>Why <code>#\</code> rather than just, say, <code>#</code>? The idea is to use <code>#</code> as a namespace
+of sorts; so far we&rsquo;re only using one entry.&#160;<a class="footnote-backref" href="#fnref:dispatch" title="Jump back to footnote 2 in the text">&#8617;&#xFE0E;</a></p>
+</li>
+</ol>
+</div>
+  </div>
+</article>
+    </main>
+    <footer>
+      <div class="copyright">
+        &copy; 2018 John Mastro
+      </div>
+      <div class="contact">
+        <span id="contact-email">jbm@[this domain]</span>
+      </div>
+    </footer>
+    <script src="/static/email.js"></script>
+  </body>
+</html>

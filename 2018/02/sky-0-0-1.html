@@ -1,0 +1,226 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-43613920-1"></script>
+    <script src="/static/gtag.js"></script>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="This is the first post in what will be a series of posts about implementing an interpreter for a small Lisp-like language, which I’m calling Sky. I’ve put up a page here with more information about my goals for this project. The code as of this post is …">
+    <meta name="author" content="John Mastro">
+    <title>John Mastro: Sky 0.0.1: Basic data model</title>
+    <link rel="alternate" type="application/atom+xml" href="/None" title="John Mastro Atom Feed">
+    <!--[if lt IE 9]>
+    <script src="/static/html5shiv.min.js"></script>
+    <![endif]-->
+    <link rel="stylesheet" href="/static/normalize.min.css">
+    <link rel="stylesheet" href="/static/base.min.css">
+    <link rel="stylesheet" href="/static/style.css">
+    <!-- Favicon variations and markup generated via
+         https://realfavicongenerator.net -->
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <link rel="manifest" href="/site.webmanifest">
+    <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+    <meta name="msapplication-TileColor" content="#2d89ef">
+    <meta name="theme-color" content="#000000">
+  </head>
+  <body>
+    <header id="main-header">
+      <div id="logo">
+        <a href="/">John Mastro</a>
+      </div>
+      <nav>
+        <a href="/archive.html">archive</a>
+      </nav>
+    </header>
+    <main>
+<article>
+  <header>
+    <h1 class="article-title">Sky 0.0.1: Basic data model</h1>
+    <p class="article-date">
+      <time class="published" datetime="2018-02-13T15:55:00-08:00">
+        2018-02-13
+      </time>
+    </p>
+  </header>
+  <div class="article-content">
+    <p>This is the first post in what will be a series of posts about implementing an
+interpreter for a small Lisp-like language, which I&rsquo;m calling Sky. I&rsquo;ve put up a
+page <a href="https://jbm.io/sky.html">here</a> with more information about my goals for this project. The code
+as of this post is tagged <a href="https://github.com/johnmastro/sky/tree/sky-0.0.1">sky-0.0.1</a></p>
+<p>I&rsquo;m starting by defining a basic data model, i.e. how Sky values will be
+represented in C (the implementation language). If you&rsquo;re already familiar with
+how dynamically-typed data is represented in C this may be a bit boring, but we
+have to start somewhere.</p>
+<p>Being dynamically typed means that type information needs to be attached to each
+value (as opposed to variable). I&rsquo;ll use an <code>enum</code> for this.</p>
+<pre><code>enum type_tag {
+    TAG_NONE = 0,
+    TAG_INT,
+    TAG_CHAR,
+    TAG_STRING,
+    TAG_SYMBOL,
+    TAG_LIST
+};
+</code></pre>
+<p>As you can see, the types I&rsquo;m defining at this stage are integers, characters,
+strings, symbols, and lists. There are a few types I&rsquo;ll almost certainly add
+later on (e.g. functions) and others that, while important and interesting in
+their own right, I may skip (e.g. floating point numbers).</p>
+<p>Next I define the C structures that will represent Sky values.</p>
+<pre><code>struct string {
+    ptrdiff_t len;
+    unsigned char *data;
+};
+
+struct symbol {
+    struct object *name;
+};
+
+struct list {
+    struct object *first;
+    struct object *rest;
+};
+
+struct object {
+    enum type_tag tag;
+
+    union {
+        intptr_t i;
+        int c;
+        struct string string;
+        struct symbol symbol;
+        struct list list;
+    } u;
+};
+</code></pre>
+<p>Using a <code>union</code> embedded in a <code>struct</code> alongside a type tag is probably the most
+obvious way to represent dynamically-typed values in C, but it&rsquo;s not the only
+option and does have a couple notable downsides. Most importantly, a <code>union</code> is
+always the size of its largest member. In this case, that means that on an
+x86-64 the <code>union</code> uses 16 bytes (as required by <code>struct string</code> and <code>struct
+list</code>), even when it only contains a 4-byte <code>int</code> (representing a character
+code). However, that concern is purely hypothetical for now, and I&rsquo;ll most
+likely revise the data model a few times going forward anyway, so I&rsquo;m not going
+to worry about it.</p>
+<p>Next up are constructors and accessors for the various types. I&rsquo;ll show those
+for strings here since they have the most going on.</p>
+<pre><code>struct object *make_object(enum type_tag tag)
+{
+    struct object *obj = xmalloc(sizeof(*obj));
+    obj-&gt;tag = tag;
+    return obj;
+}
+
+struct object *make_string(const char *data, ptrdiff_t len)
+{
+    assert(len &gt;= 0);
+    assert(len != PTRDIFF_MAX);
+    struct object *obj = make_object(TAG_STRING);
+    obj-&gt;u.string.len = len;
+    obj-&gt;u.string.data = xmalloc(len + 1);
+    memcpy(obj-&gt;u.string.data, data, len);
+    obj-&gt;u.string.data[len] = '\0';
+    return obj;
+}
+
+ptrdiff_t string_length(struct object *obj)
+{
+    return obj-&gt;u.string.len;
+}
+
+const unsigned char *string_data(struct object *obj)
+{
+    return obj-&gt;u.string.data;
+}
+
+int string_ref(struct object *obj, ptrdiff_t i)
+{
+    const unsigned char *data = string_data(obj);
+    return data[i];
+}
+</code></pre>
+<p>A few things to note:</p>
+<ul>
+<li>I&rsquo;m using a function <code>xmalloc</code> (defined in <a href="https://github.com/johnmastro/sky/blob/sky-0.0.1/src/memory.c">memory.c</a>) to allocate memory.
+  It calls <code>abort</code> (via <code>error</code>, defined in <a href="https://github.com/johnmastro/sky/blob/sky-0.0.1/src/error.c">error.c</a>) if <code>malloc</code> is unable
+  to allocate memory, so its callers don&rsquo;t need to check for null pointers.</li>
+<li>Unlike C strings, Sky strings include their length, and thus can contain
+  embedded <code>NUL</code> bytes. However, <code>make_string</code> still ensures that the string
+  data is <code>NUL</code>-terminated, so that the string data is always a valid C string.
+  Although, if the string does contain embedded <code>NUL</code> bytes, then Sky and
+  (naive) C code will have different views of the string&rsquo;s length and value.</li>
+<li>Sky&rsquo;s lists are traditional singly-linked lists. Unlike Common Lisp and
+  Scheme, Sky won&rsquo;t allow &ldquo;dotted pairs&rdquo;, i.e. cons cells with arbitrary
+  elements in their <code>rest</code> (a.k.a. <code>cdr</code>) field. In other words, the second
+  argument to <code>cons</code> must be a list or <code>nil</code>. The latter is represented as a
+  null pointer.</li>
+<li>Accessors like <code>string_length</code>, <code>string_data</code>, and <code>string_ref</code> are often
+  implemented as macros rather than functions. Sometimes this is for efficiency
+  (particularly in unoptimized builds where the functions won&rsquo;t be inlined), or
+  because the the macro definitions would be more concise and could also be used
+  for mutating their arguments. None of those reasons are particularly
+  compelling for Sky, but the main reason I&rsquo;ve implemented them as functions is
+  so they&rsquo;re available within a debugger session<sup id="fnref:gdb-lldb"><a class="footnote-ref" href="#fn:gdb-lldb">1</a></sup>.</li>
+</ul>
+<p>Speaking of debuggers, it&rsquo;s sometimes useful to use one as a sort of REPL.
+Here&rsquo;s a (lightly edited) brief example session in <code>gdb</code> where I set a
+breakpoint on <code>main</code>, run the program, and then experiment with the functions
+for integers and strings.</p>
+<pre><code>~/code/sky $ make clean all
+~/code/sky $ gdb src/sky
+(gdb) br main
+Breakpoint 1 at 0x400c2a: file src/sky.c, line 42.
+(gdb) r
+Starting program: /home/jbm/code/sky/src/sky
+Breakpoint 1, main () at src/sky.c:42
+(gdb) set $i = make_integer(100)
+(gdb) p $i
+$1 = (struct object *) 0x603260
+(gdb) p *$i
+$2 = {tag = TAG_INT, u = {i = 100, ...}}
+(gdb) p integer_data($i)
+$3 = 100
+(gdb) set $s = make_string("foo", 3)
+(gdb) p $s
+$4 = (struct object *) 0x603280
+(gdb) p *$s
+$5 = {tag = TAG_STRING, u = {..., string = {len = 3, data = 0x6032a0 "foo"}, ...}}
+(gdb) p string_data($s)
+$6 = (const unsigned char *) 0x6032a0 "foo"
+(gdb) p string_length($s)
+$7 = 3
+(gdb) p string_ref($s, 0)
+$8 = 102
+(gdb) p/c string_ref($s, 0)
+$9 = 102 'f'
+</code></pre>
+<p>See <a href="https://github.com/johnmastro/sky/tree/sky-0.0.1">the code on GitHub</a> for all the details - I haven&rsquo;t discussed every
+line (or even every file) here, just picked out a few details for discussion. If
+you&rsquo;ve come across this and have any questions or comments, please feel free to
+send me an email at the address below.</p>
+<div class="footnote">
+<hr>
+<ol>
+<li id="fn:gdb-lldb">
+<p>GDB can make macros available for use while debugging but, as far as I know,
+LLDB currently cannot.&#160;<a class="footnote-backref" href="#fnref:gdb-lldb" title="Jump back to footnote 1 in the text">&#8617;&#xFE0E;</a></p>
+</li>
+</ol>
+</div>
+  </div>
+</article>
+    </main>
+    <footer>
+      <div class="copyright">
+        &copy; 2018 John Mastro
+      </div>
+      <div class="contact">
+        <span id="contact-email">jbm@[this domain]</span>
+      </div>
+    </footer>
+    <script src="/static/email.js"></script>
+  </body>
+</html>

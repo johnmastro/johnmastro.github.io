@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-43613920-1"></script>
+    <script src="/static/gtag.js"></script>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="This is part of a series of posts about writing a simple interpreter for a small Lisp-like language. Please see here for an overview of the series. Last time we added a not-quite-REPL and some round-trip read/print tests. This time we’re going to address an issue I mentioned …">
+    <meta name="author" content="John Mastro">
+    <title>John Mastro: Sky 0.0.6: Making all symbols readable</title>
+    <link rel="alternate" type="application/atom+xml" href="/None" title="John Mastro Atom Feed">
+    <!--[if lt IE 9]>
+    <script src="/static/html5shiv.min.js"></script>
+    <![endif]-->
+    <link rel="stylesheet" href="/static/normalize.min.css">
+    <link rel="stylesheet" href="/static/base.min.css">
+    <link rel="stylesheet" href="/static/style.css">
+    <!-- Favicon variations and markup generated via
+         https://realfavicongenerator.net -->
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <link rel="manifest" href="/site.webmanifest">
+    <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+    <meta name="msapplication-TileColor" content="#2d89ef">
+    <meta name="theme-color" content="#000000">
+  </head>
+  <body>
+    <header id="main-header">
+      <div id="logo">
+        <a href="/">John Mastro</a>
+      </div>
+      <nav>
+        <a href="/archive.html">archive</a>
+      </nav>
+    </header>
+    <main>
+<article>
+  <header>
+    <h1 class="article-title">Sky 0.0.6: Making all symbols readable</h1>
+    <p class="article-date">
+      <time class="published" datetime="2018-04-28T14:02:00-07:00">
+        2018-04-28
+      </time>
+    </p>
+  </header>
+  <div class="article-content">
+    <p>This is part of a series of posts about writing a simple interpreter for a small
+Lisp-like language. Please see <a href="https://jbm.io/sky.html">here</a> for an overview of the series.</p>
+<p><a href="https://jbm.io/2018/04/sky-0-0-5.html">Last time</a> we added a not-quite-REPL and some round-trip read/print
+tests. This time we&rsquo;re going to address an issue I mentioned at the end of the
+<a href="https://jbm.io/2018/03/sky-0-0-3.html">post about printing</a>: currently, some symbols are printed in such a
+way that it&rsquo;s impossible for them to be read back in.</p>
+<p>We could accept that as a limitation, just like we&rsquo;re accepting lots of other
+limitations. However, this is easy to fix, so we&rsquo;re going to do it now.</p>
+<p>You can see the code as of this post <a href="https://github.com/johnmastro/sky/tree/sky-0.0.6">here</a>, and a comparison against last
+time <a href="https://github.com/johnmastro/sky/compare/sky-0.0.5...sky-0.0.6">here</a>.</p>
+<h2>The problem</h2>
+<p>To review the problem, every symbol has a name, which is a string. There are no
+restrictions on what strings can be the name of a symbol; even the empty string
+is a valid symbol name. And a symbol&rsquo;s name determines how we print it. However,
+we need to take special care with some symbol names, because otherwise the
+result won&rsquo;t be readable.</p>
+<p>For example, consider a symbol with the name <code>"foo bar"</code>. It will print as <code>foo
+bar</code>, but <code>foo bar</code> won&rsquo;t be read back in as the symbol with the name <code>"foo
+bar"</code> - instead, it will be read back in as two symbols, <code>foo</code> and <code>bar</code>.</p>
+<h2>The solution</h2>
+<p>If we don&rsquo;t want to say &ldquo;don&rsquo;t do that&rdquo;, the solution is to quote the symbol
+name somehow. We could pick special quote markers, but it would probably have to
+be a two-character sequence; something like <code>#|name here|#</code>.</p>
+<p>Instead, we&rsquo;ll use regular old <code>"</code> as the quote character, and precede the value
+with a tag that tells the reader the following expression is a symbol. The
+result will be <code>#symbol "name here"</code>.</p>
+<p>The syntax is inspired by <a href="https://clojure.org/reference/reader#tagged_literals">Clojure&rsquo;s tagged literals</a>, though
+we&rsquo;re using it purely for symbols for now. We may make our implementation more
+general in the future.</p>
+<h2>The implementation</h2>
+<p>There are a few different bits to the implementation. First of all, we need a
+way to identify symbols with names that require quoting:</p>
+<pre><code>static bool quotename(value_t name, ptrdiff_t len)
+{
+    bool intlike = true;
+
+    if (len == 0) return true;
+
+    for (ptrdiff_t i = 0; i &lt; len; i++) {
+        int c = string_ref(name, i);
+        if (c &lt; '!'     // Control and whitespace characters
+            || c &gt; '~'  // DEL
+            || c == '(' || c == ')'
+            || c == '"'
+            || c == ';'
+            || (i == 0 &amp;&amp; c == '#'))
+            return true;
+        if (intlike
+            &amp;&amp; !((i == 0 &amp;&amp; (c == '-' || c == '+'))
+                 || (c &gt;= '0' &amp;&amp; c &lt;= '9')))
+            intlike = false;
+    }
+
+    return intlike;
+}
+</code></pre>
+<p>We then use that predicate when printing a symbol. If it returns true, we print
+<code>#symbol</code>, and then print the symbol&rsquo;s name as a string.</p>
+<pre><code>static void print_string_1(FILE *stream, value_t value, bool symbol)
+{
+    ptrdiff_t len = string_length(value);
+
+    if (symbol &amp;&amp; quotename(value, len)) {
+        fputs("#symbol ", stream);
+        symbol = false;
+    }
+
+    // ...
+}
+</code></pre>
+<p>Finally, when we read <code>#</code>, we check whether it&rsquo;s followed by <code>symbol</code>. If it is,
+we read the next expression, verify that it&rsquo;s a string, and construct the symbol
+with that name.</p>
+<pre><code>if (TOKEQ(buf, len, "symbol")) {
+    int flag;
+    value_t sexp = read_sexp(stream, 0, &amp;flag);
+    // ...
+    if (get_type_tag(sexp) == TAG_STRING)
+        return make_symbol(sexp);
+    // ...
+}
+</code></pre>
+<p>There are a few new tests to go along with this, although I wouldn&rsquo;t be
+surprised at all if there are edge cases that aren&rsquo;t handled appropriately.
+However, they should be easy to fix as they come up.</p>
+<h2>Next time</h2>
+<p>Next time we&rsquo;ll start working on a symbol table, which will ultimately let us
+intern symbols.</p>
+  </div>
+</article>
+    </main>
+    <footer>
+      <div class="copyright">
+        &copy; 2018 John Mastro
+      </div>
+      <div class="contact">
+        <span id="contact-email">jbm@[this domain]</span>
+      </div>
+    </footer>
+    <script src="/static/email.js"></script>
+  </body>
+</html>

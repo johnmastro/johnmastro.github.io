@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-43613920-1"></script>
+    <script src="/static/gtag.js"></script>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="A small, simple, interpreted Lisp">
+    <meta name="author" content="John Mastro">
+    <title>John Mastro: Sky</title>
+    <link rel="alternate" type="application/atom+xml" href="/None" title="John Mastro Atom Feed">
+    <!--[if lt IE 9]>
+    <script src="/static/html5shiv.min.js"></script>
+    <![endif]-->
+    <link rel="stylesheet" href="/static/normalize.min.css">
+    <link rel="stylesheet" href="/static/base.min.css">
+    <link rel="stylesheet" href="/static/style.css">
+    <!-- Favicon variations and markup generated via
+         https://realfavicongenerator.net -->
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <link rel="manifest" href="/site.webmanifest">
+    <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+    <meta name="msapplication-TileColor" content="#2d89ef">
+    <meta name="theme-color" content="#000000">
+  </head>
+  <body>
+    <header id="main-header">
+      <div id="logo">
+        <a href="/">John Mastro</a>
+      </div>
+      <nav>
+        <a href="/archive.html">archive</a>
+      </nav>
+    </header>
+    <main>
+<article>
+  <header>
+    <h1 class="page-title">Sky</h1>
+    <p class="article-date">
+      Updated
+      <time class="modified" datetime="2018-05-08T14:10:00-07:00">
+        2018-05-08
+      </time>
+    </p>
+  </header>
+  <div class="page-content">
+    <p>I&rsquo;m writing a series of posts about a building a simple Lisp interpreter, which
+I&rsquo;m calling Sky<sup id="fnref:name"><a class="footnote-ref" href="#fn:name">1</a></sup>. The code is available on GitHub <a href="https://github.com/johnmastro/sky">here</a>.</p>
+<p>Programming language implementation is a very interesting topic, and it&rsquo;s
+something that can seem a bit intimidating even to experienced programmers. I&rsquo;m
+by no means an expert on programming language implementation, but I hope that by
+keeping things simple and going step-by-step I can write something that will be
+useful to other non-experts interested in the topic.</p>
+<p>This is hardly an original idea - there are many books and blog posts about
+simple Lisp implementations (see &ldquo;other resources&rdquo; below for some examples).
+However, there are so many different approaches one can take that I think new
+entries are still potentially valuable. For instance, some use very high-level
+languages like Python or Lisp/Scheme, whereas I&rsquo;ll use C. Some stop before
+getting to topics like garbage collection and error handling, whereas I hope to
+include both. Others are meant for practical use and therefore introduce
+considerable complexity to improve performance or provide particular features,
+whereas my goal is to emphasize simplicity and comprehensibility.</p>
+<p>As I said, I&rsquo;m not an expert on language implementation, either regarding Lisp
+or in general. I will certainly make mistakes, overlook things, have to double
+back, and so on. Look at this in the spirit of a fellow student sharing their
+studies rather than an expert imparting wisdom.</p>
+<p>Why a Lisp? There&rsquo;s a lot to like about Lisps, but the main reason is to
+more-or-less take syntax off the table. Not that programming language syntax
+isn&rsquo;t a worthy topic - it&rsquo;s just not what I want to focus on here. Don&rsquo;t worry,
+I won&rsquo;t wax poetic about the inherent virtues of Lisp.</p>
+<h2>Posts</h2>
+<ul>
+<li><a href="https://jbm.io/2018/02/sky-0-0-1.html">Sky 0.0.1: Basic data mode</a></li>
+<li><a href="https://jbm.io/2018/03/sky-0-0-2.html">Sky 0.0.2: Immediate integers and characters</a></li>
+<li><a href="https://jbm.io/2018/03/sky-0-0-3.html">Sky 0.0.3: Printing data</a></li>
+<li><a href="https://jbm.io/2018/04/sky-0-0-4.html">Sky 0.0.4: Reading data</a></li>
+<li><a href="https://jbm.io/2018/04/sky-0-0-5.html">Sky 0.0.5: A not-quite-REPL</a></li>
+<li><a href="https://jbm.io/2018/04/sky-0-0-6.html">Sky 0.0.6: Making all symbols readable</a></li>
+<li><a href="https://jbm.io/2018/05/sky-0-0-7.html">Sky 0.0.7: Basic equality</a></li>
+</ul>
+<h2>Other resources</h2>
+<p>If you&rsquo;re interested in this project, you may also enjoy these resources. They
+vary greatly in approach, complexity, and format.</p>
+<ul>
+<li><a href="https://mitpress.mit.edu/sicp/full-text/book/book.html">Structure and Interpretation of Computer Programs</a> - includes a
+  <a href="https://en.wikipedia.org/wiki/Meta-circular_evaluator">meta-circular</a> <a href="https://en.wikipedia.org/wiki/Scheme_(programming_language)">Scheme</a> interpreter</li>
+<li><a href="http://peter.michaux.ca/articles/scheme-from-scratch-introduction">Scheme from Scratch</a> (see his <a href="http://peter.michaux.ca/archives">archives</a> for the
+  subsequent posts, plus the <a href="https://github.com/petermichaux/bootstrap-scheme">repo on GitHub</a>) - builds a &ldquo;bootstrap
+  Scheme&rdquo; step-by-step</li>
+<li><a href="http://norvig.com/lispy.html">(How to Write a (Lisp) Interpreter (in Python))</a> - a simple Lisp
+  interpreter in only 117 lines of Python</li>
+<li><a href="https://www.amazon.com/dp/1558601910">Paradigms of Artificial Intelligence Programming</a> - includes an
+  interpreter and compiler for Scheme written in <a href="https://en.wikipedia.org/wiki/Common_Lisp">Common Lisp</a></li>
+<li><a href="http://www.t3x.org/s9book/">Scheme 9 from Empty Space</a> - a book detailing a Scheme
+  implementation in C</li>
+<li><a href="https://www.gnu.org/software/emacs/">GNU Emacs</a> - if you&rsquo;re already familiar with Emacs, diving into the
+  implementation of Emacs Lisp can be both approachable and rewarding</li>
+<li><a href="https://github.com/kanaka/mal">Make a Lisp</a> - a Clojure-inspired Lisp interpreter implemented in 72
+  languages</li>
+<li><a href="https://github.com/JeffBezanson/femtolisp">Femtolisp</a> - a small, robust, and fast Scheme-like Lisp</li>
+<li><a href="http://www.buildyourownlisp.com/">Build Your Own Lisp</a> - a book that teaches C programming by walking you
+  through building a Lisp interpreter</li>
+<li><a href="ftp://publications.ai.mit.edu/ai-publications/pdf/AIM-008.pdf">Recursive Functions of Symbolic Expressions and Their Computation by
+  Machine</a> - John McCarthy&rsquo;s original paper about Lisp</li>
+</ul>
+<div class="footnote">
+<hr>
+<ol>
+<li id="fn:name">
+<p>Why &ldquo;Sky&rdquo;? It needed a name and that was the first thing that came to mind.
+Naming things is hard.&#160;<a class="footnote-backref" href="#fnref:name" title="Jump back to footnote 1 in the text">&#8617;&#xFE0E;</a></p>
+</li>
+</ol>
+</div>
+  </div>
+</article>
+    </main>
+    <footer>
+      <div class="copyright">
+        &copy; 2018 John Mastro
+      </div>
+      <div class="contact">
+        <span id="contact-email">jbm@[this domain]</span>
+      </div>
+    </footer>
+    <script src="/static/email.js"></script>
+  </body>
+</html>
