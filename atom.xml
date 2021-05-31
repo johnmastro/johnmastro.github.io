@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<feed xmlns="http://www.w3.org/2005/Atom"><title>John Mastro</title><link href="https://johnmastro.github.io/" rel="alternate"></link><link href="https://johnmastro.github.io/atom.xml" rel="self"></link><id>https://johnmastro.github.io/</id><updated>2018-05-08T19:15:00-04:00</updated><entry><title>Sky 0.0.7: Basic equality</title><link href="https://johnmastro.github.io/2018/05/sky-0-0-7.html" rel="alternate"></link><published>2018-05-08T14:10:00-04:00</published><updated>2018-05-08T19:15:00-04:00</updated><author><name>John Mastro</name></author><id>tag:johnmastro.github.io,2018-05-08:/2018/05/sky-0-0-7.html</id><summary type="html">&lt;p&gt;This is part of a series of posts about writing a simple interpreter for a small
-Lisp-like language. Please see &lt;a href="https://jbm.io/sky.html"&gt;here&lt;/a&gt; for an overview of the series.&lt;/p&gt;
-&lt;p&gt;&lt;a href="https://jbm.io/2018/04/sky-0-0-6.html"&gt;Last time&lt;/a&gt; we made all symbols readable. Now we&amp;rsquo;re going to start
+<feed xmlns="http://www.w3.org/2005/Atom"><title>John Mastro</title><link href="https://jbm.io/" rel="alternate"></link><link href="https://jbm.io/atom.xml" rel="self"></link><id>https://jbm.io/</id><updated>2018-05-08T19:15:00-04:00</updated><entry><title>Sky 0.0.7: Basic equality</title><link href="https://jbm.io/2018/05/sky-0-0-7.html" rel="alternate"></link><published>2018-05-08T14:10:00-04:00</published><updated>2018-05-08T19:15:00-04:00</updated><author><name>John Mastro</name></author><id>tag:jbm.io,2018-05-08:/2018/05/sky-0-0-7.html</id><summary type="html">&lt;p&gt;This is part of a series of posts about writing a simple interpreter for a small
+Lisp-like language. Please see &lt;a href="/sky.html"&gt;here&lt;/a&gt; for an overview of the series.&lt;/p&gt;
+&lt;p&gt;&lt;a href="/2018/04/sky-0-0-6.html"&gt;Last time&lt;/a&gt; we made all symbols readable. Now we&amp;rsquo;re going to start
 working towards a symbol table, and our first step is …&lt;/p&gt;</summary><content type="html">&lt;p&gt;This is part of a series of posts about writing a simple interpreter for a small
-Lisp-like language. Please see &lt;a href="https://jbm.io/sky.html"&gt;here&lt;/a&gt; for an overview of the series.&lt;/p&gt;
-&lt;p&gt;&lt;a href="https://jbm.io/2018/04/sky-0-0-6.html"&gt;Last time&lt;/a&gt; we made all symbols readable. Now we&amp;rsquo;re going to start
+Lisp-like language. Please see &lt;a href="/sky.html"&gt;here&lt;/a&gt; for an overview of the series.&lt;/p&gt;
+&lt;p&gt;&lt;a href="/2018/04/sky-0-0-6.html"&gt;Last time&lt;/a&gt; we made all symbols readable. Now we&amp;rsquo;re going to start
 working towards a symbol table, and our first step is to define &lt;code&gt;equal&lt;/code&gt;.&lt;/p&gt;
 &lt;p&gt;You can see the code as of this post &lt;a href="https://github.com/johnmastro/sky/tree/sky-0.0.7"&gt;here&lt;/a&gt;, and a comparison against last
 time &lt;a href="https://github.com/johnmastro/sky/compare/sky-0.0.6...sky-0.0.7"&gt;here&lt;/a&gt;.&lt;/p&gt;
@@ -34,14 +34,14 @@ same object in memory. This works by &lt;a href="https://en.wikipedia.org/wiki/S
 symbol table of some sort, which is what we&amp;rsquo;re working on now.&amp;#160;&lt;a class="footnote-backref" href="#fnref:symbols" title="Jump back to footnote 1 in the text"&gt;&amp;#8617;&amp;#xFE0E;&lt;/a&gt;&lt;/p&gt;
 &lt;/li&gt;
 &lt;/ol&gt;
-&lt;/div&gt;</content><category term="05"></category></entry><entry><title>Sky 0.0.6: Making all symbols readable</title><link href="https://johnmastro.github.io/2018/04/sky-0-0-6.html" rel="alternate"></link><published>2018-04-28T14:02:00-04:00</published><updated>2018-04-28T14:02:00-04:00</updated><author><name>John Mastro</name></author><id>tag:johnmastro.github.io,2018-04-28:/2018/04/sky-0-0-6.html</id><summary type="html">&lt;p&gt;This is part of a series of posts about writing a simple interpreter for a small
-Lisp-like language. Please see &lt;a href="https://jbm.io/sky.html"&gt;here&lt;/a&gt; for an overview of the series.&lt;/p&gt;
-&lt;p&gt;&lt;a href="https://jbm.io/2018/04/sky-0-0-5.html"&gt;Last time&lt;/a&gt; we added a not-quite-REPL and some round-trip read/print
+&lt;/div&gt;</content><category term="05"></category></entry><entry><title>Sky 0.0.6: Making all symbols readable</title><link href="https://jbm.io/2018/04/sky-0-0-6.html" rel="alternate"></link><published>2018-04-28T14:02:00-04:00</published><updated>2018-04-28T14:02:00-04:00</updated><author><name>John Mastro</name></author><id>tag:jbm.io,2018-04-28:/2018/04/sky-0-0-6.html</id><summary type="html">&lt;p&gt;This is part of a series of posts about writing a simple interpreter for a small
+Lisp-like language. Please see &lt;a href="/sky.html"&gt;here&lt;/a&gt; for an overview of the series.&lt;/p&gt;
+&lt;p&gt;&lt;a href="/2018/04/sky-0-0-5.html"&gt;Last time&lt;/a&gt; we added a not-quite-REPL and some round-trip read/print
 tests. This time we&amp;rsquo;re going to address an issue I mentioned …&lt;/p&gt;</summary><content type="html">&lt;p&gt;This is part of a series of posts about writing a simple interpreter for a small
-Lisp-like language. Please see &lt;a href="https://jbm.io/sky.html"&gt;here&lt;/a&gt; for an overview of the series.&lt;/p&gt;
-&lt;p&gt;&lt;a href="https://jbm.io/2018/04/sky-0-0-5.html"&gt;Last time&lt;/a&gt; we added a not-quite-REPL and some round-trip read/print
+Lisp-like language. Please see &lt;a href="/sky.html"&gt;here&lt;/a&gt; for an overview of the series.&lt;/p&gt;
+&lt;p&gt;&lt;a href="/2018/04/sky-0-0-5.html"&gt;Last time&lt;/a&gt; we added a not-quite-REPL and some round-trip read/print
 tests. This time we&amp;rsquo;re going to address an issue I mentioned at the end of the
-&lt;a href="https://jbm.io/2018/03/sky-0-0-3.html"&gt;post about printing&lt;/a&gt;: currently, some symbols are printed in such a
+&lt;a href="/2018/03/sky-0-0-3.html"&gt;post about printing&lt;/a&gt;: currently, some symbols are printed in such a
 way that it&amp;rsquo;s impossible for them to be read back in.&lt;/p&gt;
 &lt;p&gt;We could accept that as a limitation, just like we&amp;rsquo;re accepting lots of other
 limitations. However, this is easy to fix, so we&amp;rsquo;re going to do it now.&lt;/p&gt;
@@ -124,12 +124,12 @@ surprised at all if there are edge cases that aren&amp;rsquo;t handled appropria
 However, they should be easy to fix as they come up.&lt;/p&gt;
 &lt;h2&gt;Next time&lt;/h2&gt;
 &lt;p&gt;Next time we&amp;rsquo;ll start working on a symbol table, which will ultimately let us
-intern symbols.&lt;/p&gt;</content><category term="04"></category></entry><entry><title>Sky 0.0.5: A not-quite-REPL</title><link href="https://johnmastro.github.io/2018/04/sky-0-0-5.html" rel="alternate"></link><published>2018-04-27T14:02:00-04:00</published><updated>2018-04-27T14:02:00-04:00</updated><author><name>John Mastro</name></author><id>tag:johnmastro.github.io,2018-04-27:/2018/04/sky-0-0-5.html</id><summary type="html">&lt;p&gt;This is part of a series of posts about writing a simple interpreter for a small
-Lisp-like language. Please see &lt;a href="https://jbm.io/sky.html"&gt;here&lt;/a&gt; for an overview of the series.&lt;/p&gt;
-&lt;p&gt;&lt;a href="https://jbm.io/2018/04/sky-0-0-4.html"&gt;Last time&lt;/a&gt; we added the ability to read Sky data from a C stream.
+intern symbols.&lt;/p&gt;</content><category term="04"></category></entry><entry><title>Sky 0.0.5: A not-quite-REPL</title><link href="https://jbm.io/2018/04/sky-0-0-5.html" rel="alternate"></link><published>2018-04-27T14:02:00-04:00</published><updated>2018-04-27T14:02:00-04:00</updated><author><name>John Mastro</name></author><id>tag:jbm.io,2018-04-27:/2018/04/sky-0-0-5.html</id><summary type="html">&lt;p&gt;This is part of a series of posts about writing a simple interpreter for a small
+Lisp-like language. Please see &lt;a href="/sky.html"&gt;here&lt;/a&gt; for an overview of the series.&lt;/p&gt;
+&lt;p&gt;&lt;a href="/2018/04/sky-0-0-4.html"&gt;Last time&lt;/a&gt; we added the ability to read Sky data from a C stream.
 This time we&amp;rsquo;re doing something with a smaller …&lt;/p&gt;</summary><content type="html">&lt;p&gt;This is part of a series of posts about writing a simple interpreter for a small
-Lisp-like language. Please see &lt;a href="https://jbm.io/sky.html"&gt;here&lt;/a&gt; for an overview of the series.&lt;/p&gt;
-&lt;p&gt;&lt;a href="https://jbm.io/2018/04/sky-0-0-4.html"&gt;Last time&lt;/a&gt; we added the ability to read Sky data from a C stream.
+Lisp-like language. Please see &lt;a href="/sky.html"&gt;here&lt;/a&gt; for an overview of the series.&lt;/p&gt;
+&lt;p&gt;&lt;a href="/2018/04/sky-0-0-4.html"&gt;Last time&lt;/a&gt; we added the ability to read Sky data from a C stream.
 This time we&amp;rsquo;re doing something with a smaller scope: adding some tests for
 reading and printing, plus a note-quite-&lt;a href="https://en.wikipedia.org/wiki/Read-eval-print_loop"&gt;REPL&lt;/a&gt; (specifically, without the
 &amp;ldquo;eval&amp;rdquo; part).&lt;/p&gt;
@@ -198,14 +198,14 @@ Goodbye
 &lt;/code&gt;&lt;/pre&gt;
 &lt;p&gt;That&amp;rsquo;s all for this time.&lt;/p&gt;
 &lt;h2&gt;Next time&lt;/h2&gt;
-&lt;p&gt;Next time I think we&amp;rsquo;ll try to solve the problem I referenced &lt;a href="https://jbm.io/2018/03/sky-0-0-3.html"&gt;when discussing
+&lt;p&gt;Next time I think we&amp;rsquo;ll try to solve the problem I referenced &lt;a href="/2018/03/sky-0-0-3.html"&gt;when discussing
 printing&lt;/a&gt;, which is that there are currently some symbols which can
-be printed but not read.&lt;/p&gt;</content><category term="04"></category></entry><entry><title>Sky 0.0.4: Reading data</title><link href="https://johnmastro.github.io/2018/04/sky-0-0-4.html" rel="alternate"></link><published>2018-04-26T15:25:00-04:00</published><updated>2018-04-27T14:15:00-04:00</updated><author><name>John Mastro</name></author><id>tag:johnmastro.github.io,2018-04-26:/2018/04/sky-0-0-4.html</id><summary type="html">&lt;p&gt;This is part of a series of posts about writing a simple interpreter for a small
-Lisp-like language. Please see &lt;a href="https://jbm.io/sky.html"&gt;here&lt;/a&gt; for an overview of the series.&lt;/p&gt;
-&lt;p&gt;&lt;a href="https://jbm.io/2018/03/sky-0-0-3.html"&gt;Last time&lt;/a&gt; we added the ability to print Sky data to a C stream.
+be printed but not read.&lt;/p&gt;</content><category term="04"></category></entry><entry><title>Sky 0.0.4: Reading data</title><link href="https://jbm.io/2018/04/sky-0-0-4.html" rel="alternate"></link><published>2018-04-26T15:25:00-04:00</published><updated>2018-04-27T14:15:00-04:00</updated><author><name>John Mastro</name></author><id>tag:jbm.io,2018-04-26:/2018/04/sky-0-0-4.html</id><summary type="html">&lt;p&gt;This is part of a series of posts about writing a simple interpreter for a small
+Lisp-like language. Please see &lt;a href="/sky.html"&gt;here&lt;/a&gt; for an overview of the series.&lt;/p&gt;
+&lt;p&gt;&lt;a href="/2018/03/sky-0-0-3.html"&gt;Last time&lt;/a&gt; we added the ability to print Sky data to a C stream.
 This time we&amp;rsquo;re adding the inverse, the ability …&lt;/p&gt;</summary><content type="html">&lt;p&gt;This is part of a series of posts about writing a simple interpreter for a small
-Lisp-like language. Please see &lt;a href="https://jbm.io/sky.html"&gt;here&lt;/a&gt; for an overview of the series.&lt;/p&gt;
-&lt;p&gt;&lt;a href="https://jbm.io/2018/03/sky-0-0-3.html"&gt;Last time&lt;/a&gt; we added the ability to print Sky data to a C stream.
+Lisp-like language. Please see &lt;a href="/sky.html"&gt;here&lt;/a&gt; for an overview of the series.&lt;/p&gt;
+&lt;p&gt;&lt;a href="/2018/03/sky-0-0-3.html"&gt;Last time&lt;/a&gt; we added the ability to print Sky data to a C stream.
 This time we&amp;rsquo;re adding the inverse, the ability to read Sky data from a C
 stream. The reader is the most complex component so far, with roughly three
 times as many lines of code as the printer.&lt;/p&gt;
@@ -326,12 +326,12 @@ the &lt;code&gt;eval&lt;/code&gt; part.&lt;/p&gt;
 of sorts; so far we&amp;rsquo;re only using one entry.&amp;#160;&lt;a class="footnote-backref" href="#fnref:dispatch" title="Jump back to footnote 2 in the text"&gt;&amp;#8617;&amp;#xFE0E;&lt;/a&gt;&lt;/p&gt;
 &lt;/li&gt;
 &lt;/ol&gt;
-&lt;/div&gt;</content><category term="04"></category></entry><entry><title>Sky-0.0.3: Printing data</title><link href="https://johnmastro.github.io/2018/03/sky-0-0-3.html" rel="alternate"></link><published>2018-03-08T17:30:00-05:00</published><updated>2018-03-08T17:30:00-05:00</updated><author><name>John Mastro</name></author><id>tag:johnmastro.github.io,2018-03-08:/2018/03/sky-0-0-3.html</id><summary type="html">&lt;p&gt;This is part of a series of posts about writing a simple interpreter for a small
+&lt;/div&gt;</content><category term="04"></category></entry><entry><title>Sky-0.0.3: Printing data</title><link href="https://jbm.io/2018/03/sky-0-0-3.html" rel="alternate"></link><published>2018-03-08T17:30:00-05:00</published><updated>2018-03-08T17:30:00-05:00</updated><author><name>John Mastro</name></author><id>tag:jbm.io,2018-03-08:/2018/03/sky-0-0-3.html</id><summary type="html">&lt;p&gt;This is part of a series of posts about writing a simple interpreter for a small
 Lisp-like language. Please see &lt;a href="/sky.html"&gt;here&lt;/a&gt; for an overview of the series.&lt;/p&gt;
-&lt;p&gt;In the &lt;a href="https://jbm.io/2018/02/sky-0-0-1.html"&gt;last&lt;/a&gt; &lt;a href="https://jbm.io/2018/03/sky-0-0-2.html"&gt;two&lt;/a&gt; entries we defined a basic data model
+&lt;p&gt;In the &lt;a href="/2018/02/sky-0-0-1.html"&gt;last&lt;/a&gt; &lt;a href="/2018/03/sky-0-0-2.html"&gt;two&lt;/a&gt; entries we defined a basic data model
 with a handful of types. Today we&amp;rsquo;ll add some functionality with …&lt;/p&gt;</summary><content type="html">&lt;p&gt;This is part of a series of posts about writing a simple interpreter for a small
 Lisp-like language. Please see &lt;a href="/sky.html"&gt;here&lt;/a&gt; for an overview of the series.&lt;/p&gt;
-&lt;p&gt;In the &lt;a href="https://jbm.io/2018/02/sky-0-0-1.html"&gt;last&lt;/a&gt; &lt;a href="https://jbm.io/2018/03/sky-0-0-2.html"&gt;two&lt;/a&gt; entries we defined a basic data model
+&lt;p&gt;In the &lt;a href="/2018/02/sky-0-0-1.html"&gt;last&lt;/a&gt; &lt;a href="/2018/03/sky-0-0-2.html"&gt;two&lt;/a&gt; entries we defined a basic data model
 with a handful of types. Today we&amp;rsquo;ll add some functionality with real,
 externally-observable effects: printing. Specifically, we&amp;rsquo;ll write functions
 that print Sky data to a C stream using representations that can be read back in
@@ -545,7 +545,7 @@ be printed &lt;code&gt;foo bar&lt;/code&gt;, but that would be read back in as t
 and &lt;code&gt;bar&lt;/code&gt;). We&amp;rsquo;ll come back to this later.&amp;#160;&lt;a class="footnote-backref" href="#fnref:symbol-problem" title="Jump back to footnote 2 in the text"&gt;&amp;#8617;&amp;#xFE0E;&lt;/a&gt;&lt;/p&gt;
 &lt;/li&gt;
 &lt;/ol&gt;
-&lt;/div&gt;</content><category term="03"></category></entry><entry><title>I'm now maintaining Unidecode for Emacs</title><link href="https://johnmastro.github.io/2018/03/maintaining-unidecode-for-emacs.html" rel="alternate"></link><published>2018-03-06T18:23:00-05:00</published><updated>2018-03-12T18:32:00-04:00</updated><author><name>John Mastro</name></author><id>tag:johnmastro.github.io,2018-03-06:/2018/03/maintaining-unidecode-for-emacs.html</id><summary type="html">&lt;p&gt;As of today I&amp;rsquo;m officially the maintainer of &lt;a href="https://github.com/sindikat/unidecode"&gt;the Unidecode package for
+&lt;/div&gt;</content><category term="03"></category></entry><entry><title>I'm now maintaining Unidecode for Emacs</title><link href="https://jbm.io/2018/03/maintaining-unidecode-for-emacs.html" rel="alternate"></link><published>2018-03-06T18:23:00-05:00</published><updated>2018-03-12T18:32:00-04:00</updated><author><name>John Mastro</name></author><id>tag:jbm.io,2018-03-06:/2018/03/maintaining-unidecode-for-emacs.html</id><summary type="html">&lt;p&gt;As of today I&amp;rsquo;m officially the maintainer of &lt;a href="https://github.com/sindikat/unidecode"&gt;the Unidecode package for
 Emacs&lt;/a&gt;. Unidecode provides functions for transliterating
 Unicode text to ASCII. It&amp;rsquo;s based on the &lt;a href="https://pypi.python.org/pypi/Unidecode"&gt;Unidecode package for
 Python&lt;/a&gt;, which was in turn derived from the
@@ -564,7 +564,7 @@ changes cause any problems.&lt;/p&gt;
 &lt;p&gt;The MELPA recipe has been updated as of 2018-03-11, so &lt;code&gt;package-install&lt;/code&gt; away!&lt;/p&gt;
 &lt;p&gt;&lt;s&gt;Before you rush off to install it, please note that the &lt;a href="https://melpa.org"&gt;MELPA&lt;/a&gt; recipe is
 currently broken. I submitted &lt;a href="https://github.com/melpa/melpa/pull/5351"&gt;a pull request&lt;/a&gt; to update it, which
-will hopefully be merged soon.&lt;/s&gt;&lt;/p&gt;</content><category term="03"></category></entry><entry><title>Sky 0.0.2: Immediate integers and characters</title><link href="https://johnmastro.github.io/2018/03/sky-0-0-2.html" rel="alternate"></link><published>2018-03-06T18:02:00-05:00</published><updated>2018-03-06T18:02:00-05:00</updated><author><name>John Mastro</name></author><id>tag:johnmastro.github.io,2018-03-06:/2018/03/sky-0-0-2.html</id><summary type="html">&lt;p&gt;First of all, I apologize if you&amp;rsquo;re subscribed to the feed and are seeing
+will hopefully be merged soon.&lt;/s&gt;&lt;/p&gt;</content><category term="03"></category></entry><entry><title>Sky 0.0.2: Immediate integers and characters</title><link href="https://jbm.io/2018/03/sky-0-0-2.html" rel="alternate"></link><published>2018-03-06T18:02:00-05:00</published><updated>2018-03-06T18:02:00-05:00</updated><author><name>John Mastro</name></author><id>tag:jbm.io,2018-03-06:/2018/03/sky-0-0-2.html</id><summary type="html">&lt;p&gt;First of all, I apologize if you&amp;rsquo;re subscribed to the feed and are seeing
 duplicates of the last two posts. In both cases I changed things after
 publication that resulted in a different feed entry ID, causing many feed
 readers to treat the changed entry as a &lt;em&gt;new&lt;/em&gt; entry …&lt;/p&gt;</summary><content type="html">&lt;p&gt;First of all, I apologize if you&amp;rsquo;re subscribed to the feed and are seeing
@@ -572,7 +572,7 @@ duplicates of the last two posts. In both cases I changed things after
 publication that resulted in a different feed entry ID, causing many feed
 readers to treat the changed entry as a &lt;em&gt;new&lt;/em&gt; entry. I think I have things
 sorted out well enough now that it won&amp;rsquo;t be an issue going forward.&lt;/p&gt;
-&lt;p&gt;&lt;a href="https://jbm.io/2018/02/sky-0-0-1.html"&gt;Last time&lt;/a&gt; we wrote constructors and accessors for a handful of basic data
+&lt;p&gt;&lt;a href="/2018/02/sky-0-0-1.html"&gt;Last time&lt;/a&gt; we wrote constructors and accessors for a handful of basic data
 types, all of them dynamically &lt;a href="https://stackoverflow.com/questions/79923/what-and-where-are-the-stack-and-heap"&gt;allocated in the heap (as opposed to on the
 stack)&lt;/a&gt;. This time we&amp;rsquo;re going to change the representation of
 integers and characters so that they&amp;rsquo;re immediate values and don&amp;rsquo;t require
@@ -724,12 +724,12 @@ clear as possible.&lt;/p&gt;
 context.&amp;#160;&lt;a class="footnote-backref" href="#fnref:small-machines" title="Jump back to footnote 1 in the text"&gt;&amp;#8617;&amp;#xFE0E;&lt;/a&gt;&lt;/p&gt;
 &lt;/li&gt;
 &lt;/ol&gt;
-&lt;/div&gt;</content><category term="03"></category></entry><entry><title>Sky 0.0.1: Basic data model</title><link href="https://johnmastro.github.io/2018/02/sky-0-0-1.html" rel="alternate"></link><published>2018-02-13T15:55:00-05:00</published><updated>2018-02-13T15:55:00-05:00</updated><author><name>John Mastro</name></author><id>tag:johnmastro.github.io,2018-02-13:/2018/02/sky-0-0-1.html</id><summary type="html">&lt;p&gt;This is the first post in what will be a series of posts about implementing an
+&lt;/div&gt;</content><category term="03"></category></entry><entry><title>Sky 0.0.1: Basic data model</title><link href="https://jbm.io/2018/02/sky-0-0-1.html" rel="alternate"></link><published>2018-02-13T15:55:00-05:00</published><updated>2018-02-13T15:55:00-05:00</updated><author><name>John Mastro</name></author><id>tag:jbm.io,2018-02-13:/2018/02/sky-0-0-1.html</id><summary type="html">&lt;p&gt;This is the first post in what will be a series of posts about implementing an
 interpreter for a small Lisp-like language, which I&amp;rsquo;m calling Sky. I&amp;rsquo;ve put up a
-page &lt;a href="https://jbm.io/sky.html"&gt;here&lt;/a&gt; with more information about my goals for this project. The code
+page &lt;a href="/sky.html"&gt;here&lt;/a&gt; with more information about my goals for this project. The code
 as of this post is …&lt;/p&gt;</summary><content type="html">&lt;p&gt;This is the first post in what will be a series of posts about implementing an
 interpreter for a small Lisp-like language, which I&amp;rsquo;m calling Sky. I&amp;rsquo;ve put up a
-page &lt;a href="https://jbm.io/sky.html"&gt;here&lt;/a&gt; with more information about my goals for this project. The code
+page &lt;a href="/sky.html"&gt;here&lt;/a&gt; with more information about my goals for this project. The code
 as of this post is tagged &lt;a href="https://github.com/johnmastro/sky/tree/sky-0.0.1"&gt;sky-0.0.1&lt;/a&gt;&lt;/p&gt;
 &lt;p&gt;I&amp;rsquo;m starting by defining a basic data model, i.e. how Sky values will be
 represented in C (the implementation language). If you&amp;rsquo;re already familiar with
@@ -890,7 +890,7 @@ send me an email at the address below.&lt;/p&gt;
 LLDB currently cannot.&amp;#160;&lt;a class="footnote-backref" href="#fnref:gdb-lldb" title="Jump back to footnote 1 in the text"&gt;&amp;#8617;&amp;#xFE0E;&lt;/a&gt;&lt;/p&gt;
 &lt;/li&gt;
 &lt;/ol&gt;
-&lt;/div&gt;</content><category term="02"></category></entry><entry><title>Blog reboot</title><link href="https://johnmastro.github.io/2018/02/blog-reboot.html" rel="alternate"></link><published>2018-02-13T15:00:00-05:00</published><updated>2018-02-13T15:00:00-05:00</updated><author><name>John Mastro</name></author><id>tag:johnmastro.github.io,2018-02-13:/2018/02/blog-reboot.html</id><summary type="html">&lt;p&gt;In which I reboot this site&lt;/p&gt;</summary><content type="html">&lt;p&gt;I&amp;rsquo;ve had a site here since 2013 but, for a variety of reasons, I haven&amp;rsquo;t posted
+&lt;/div&gt;</content><category term="02"></category></entry><entry><title>Blog reboot</title><link href="https://jbm.io/2018/02/blog-reboot.html" rel="alternate"></link><published>2018-02-13T15:00:00-05:00</published><updated>2018-02-13T15:00:00-05:00</updated><author><name>John Mastro</name></author><id>tag:jbm.io,2018-02-13:/2018/02/blog-reboot.html</id><summary type="html">&lt;p&gt;In which I reboot this site&lt;/p&gt;</summary><content type="html">&lt;p&gt;I&amp;rsquo;ve had a site here since 2013 but, for a variety of reasons, I haven&amp;rsquo;t posted
 anything since early 2014&lt;sup id="fnref:four-years"&gt;&lt;a class="footnote-ref" href="#fn:four-years"&gt;1&lt;/a&gt;&lt;/sup&gt;. I want to start writing again now, and
 this time I have a better idea what I want to write about, at least to start.&lt;/p&gt;
 &lt;p&gt;I also want to ditch the old stuff and start fresh. I know, it&amp;rsquo;s bad form to

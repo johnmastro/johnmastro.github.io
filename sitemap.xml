@@ -1,75 +1,75 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="https://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://johnmastro.github.io/</loc>
+    <loc>https://jbm.io/</loc>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://johnmastro.github.io/archive.html</loc>
+    <loc>https://jbm.io/archive.html</loc>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://johnmastro.github.io/sky.html</loc>
+    <loc>https://jbm.io/sky.html</loc>
     <lastmod>2018-05-08T14:10:00-04:00</lastmod>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://johnmastro.github.io/2018/</loc>
+    <loc>https://jbm.io/2018/</loc>
     <priority>0.4</priority>
   </url>
   <url>
-    <loc>https://johnmastro.github.io/2018/05/</loc>
+    <loc>https://jbm.io/2018/05/</loc>
     <priority>0.4</priority>
   </url>
   <url>
-    <loc>https://johnmastro.github.io/2018/05/sky-0-0-7.html</loc>
+    <loc>https://jbm.io/2018/05/sky-0-0-7.html</loc>
     <lastmod>2018-05-08T19:15:00-04:00</lastmod>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://johnmastro.github.io/2018/04/</loc>
+    <loc>https://jbm.io/2018/04/</loc>
     <priority>0.4</priority>
   </url>
   <url>
-    <loc>https://johnmastro.github.io/2018/04/sky-0-0-6.html</loc>
+    <loc>https://jbm.io/2018/04/sky-0-0-6.html</loc>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://johnmastro.github.io/2018/04/sky-0-0-5.html</loc>
+    <loc>https://jbm.io/2018/04/sky-0-0-5.html</loc>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://johnmastro.github.io/2018/04/sky-0-0-4.html</loc>
+    <loc>https://jbm.io/2018/04/sky-0-0-4.html</loc>
     <lastmod>2018-04-27T14:15:00-04:00</lastmod>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://johnmastro.github.io/2018/03/</loc>
+    <loc>https://jbm.io/2018/03/</loc>
     <priority>0.4</priority>
   </url>
   <url>
-    <loc>https://johnmastro.github.io/2018/03/sky-0-0-3.html</loc>
+    <loc>https://jbm.io/2018/03/sky-0-0-3.html</loc>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://johnmastro.github.io/2018/03/maintaining-unidecode-for-emacs.html</loc>
+    <loc>https://jbm.io/2018/03/maintaining-unidecode-for-emacs.html</loc>
     <lastmod>2018-03-12T18:32:00-04:00</lastmod>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://johnmastro.github.io/2018/03/sky-0-0-2.html</loc>
+    <loc>https://jbm.io/2018/03/sky-0-0-2.html</loc>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://johnmastro.github.io/2018/02/</loc>
+    <loc>https://jbm.io/2018/02/</loc>
     <priority>0.4</priority>
   </url>
   <url>
-    <loc>https://johnmastro.github.io/2018/02/sky-0-0-1.html</loc>
+    <loc>https://jbm.io/2018/02/sky-0-0-1.html</loc>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://johnmastro.github.io/2018/02/blog-reboot.html</loc>
+    <loc>https://jbm.io/2018/02/blog-reboot.html</loc>
     <priority>0.6</priority>
   </url>
 </urlset>
