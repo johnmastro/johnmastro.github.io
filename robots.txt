@@ -1,3 +1,3 @@
 User-agent: *
 Disallow: /drafts/
-Sitemap: https://jbm.io/sitemap.xml
+Sitemap: https://johnmastro.github.io/sitemap.xml
