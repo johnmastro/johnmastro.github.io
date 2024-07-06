@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-43613920-1"></script>
+    <script src="/static/gtag.js"></script>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="It’s been just over 6 years since my last post here. A lot1 has happened in that time, but one thing that did not happen was me continuing to work on Sky. If you’ve been anxiously awaiting the hash function I promised at the end of the …">
+    <meta name="author" content="John Mastro">
+    <title>John Mastro: Getting paperclipped: Exploring AI-assisted coding</title>
+    <link rel="alternate" type="application/atom+xml" href="https://jbm.io/atom.xml" title="John Mastro Atom Feed">
+    <!--[if lt IE 9]>
+    <script src="/static/html5shiv.min.js"></script>
+    <![endif]-->
+    <link rel="stylesheet" href="/static/normalize.min.css">
+    <link rel="stylesheet" href="/static/base.min.css">
+    <link rel="stylesheet" href="/static/style.css">
+    <!-- Favicon variations and markup generated via
+         https://realfavicongenerator.net -->
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <link rel="manifest" href="/site.webmanifest">
+    <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+    <meta name="msapplication-TileColor" content="#2d89ef">
+    <meta name="theme-color" content="#000000">
+  </head>
+  <body>
+    <header id="main-header">
+      <div id="logo">
+        <a href="https://jbm.io/">John Mastro</a>
+      </div>
+      <nav>
+        <a href="https://jbm.io/archive.html">archive</a>
+      </nav>
+    </header>
+    <main>
+<article>
+  <header>
+    <h1 class="article-title">Getting paperclipped: Exploring AI-assisted coding</h1>
+    <p class="article-date">
+      <time class="published" datetime="2024-07-06T14:10:00-04:00">
+        2024-07-06
+      </time>
+    </p>
+  </header>
+  <div class="article-content">
+    <p>It&rsquo;s been just over 6 years since my last post here. A lot<sup id="fnref:lot"><a class="footnote-ref" href="#fn:lot">1</a></sup> has happened
+in that time, but one thing that did not happen was me continuing to work on
+<a href="/sky.html">Sky</a>. If you&rsquo;ve been anxiously awaiting the hash function I promised
+at the end of the last post, I&rsquo;m sorry to say we&rsquo;re not continuing that
+thread just now.</p>
+<p>I did recently write a little Lisp VM in TypeScript (<a href="https://github.com/johnmastro/bunny-lisp">bunny-lisp</a>) as a
+conversation piece to present at work though, which was fun.</p>
+<p>Anyway, what I want to do now is to start a series of posts on AI (or &ldquo;AI&rdquo; if you
+prefer - the generative models like OpenAI&rsquo;s GPT series that are all the rage at 
+the moment). In particular, I want to try using them for AI-assisted coding.</p>
+<p>I&rsquo;ll be coming at this from the perspective of a curious beginner, because that&rsquo;s
+what I am. And, at least to start, from a <em>user</em> perspective - rather than an
+implementer - though I may dig deeper later.</p>
+<p>What do I hope to get out of AI-assisted coding? Ideally, two things:</p>
+<ol>
+<li>Productivity - if integrating AI into software development workflows can boost
+   your productivity, then it&rsquo;s an important tool to have (and to learn
+   to use effectively) for obvious reasons.</li>
+<li>Learning - I like learning new things (which is convenient, since it would be hard to
+   avoid in a career in software) and interacting with LLMs potentially provides an
+   interesting and more fluid way to do that than traditional means.</li>
+</ol>
+<p>I am, to be honest, a bit skeptical on both of these. But, the potential upside is
+too great not to invest more than the trivial amount I have so far<sup id="fnref:sofar"><a class="footnote-ref" href="#fn:sofar">2</a></sup>.</p>
+<p>Inspired by <a href="https://www.visakanv.com/blog/do100things/">do 100 things</a>, I&rsquo;m going to try to keep these posts
+reasonably low-effort<sup id="fnref:effort"><a class="footnote-ref" href="#fn:effort">3</a></sup>, aiming for &ldquo;interesting&rdquo; but not, for example,
+&ldquo;polished&rdquo; or &ldquo;comprehensive&rdquo;. With that in mind&hellip; see you next time!</p>
+<div class="footnote">
+<hr>
+<ol>
+<li id="fn:lot">
+<p>I moved across the country, I&rsquo;ve slung bits at a couple hypergrowth startups,
+there was a global pandemic, I almost got married and then didn&rsquo;t&hellip; you
+know, life stuff.&#160;<a class="footnote-backref" href="#fnref:lot" title="Jump back to footnote 1 in the text">&#8617;&#xFE0E;</a></p>
+</li>
+<li id="fn:sofar">
+<p>Not much more than enabling GitHub Copilot in my editor and deciding I actually
+kind of hate having slop appear in my editor while I&rsquo;m trying to work.&#160;<a class="footnote-backref" href="#fnref:sofar" title="Jump back to footnote 2 in the text">&#8617;&#xFE0E;</a></p>
+</li>
+<li id="fn:effort">
+<p>If I let my perfectionist side get traction here, that decreases the chances that
+I&rsquo;ll continue the posts at all.&#160;<a class="footnote-backref" href="#fnref:effort" title="Jump back to footnote 3 in the text">&#8617;&#xFE0E;</a></p>
+</li>
+</ol>
+</div>
+  </div>
+</article>
+    </main>
+    <footer>
+      <div class="copyright">
+        &copy; 2018-2024 John Mastro
+      </div>
+      <div class="contact">
+        <span id="contact-email">jbm@[this domain]</span>
+      </div>
+    </footer>
+    <script src="/static/email.js"></script>
+  </body>
+</html>
