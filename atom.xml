@@ -1,52 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<feed xmlns="http://www.w3.org/2005/Atom"><title>John Mastro</title><link href="https://jbm.io/" rel="alternate"></link><link href="https://jbm.io/atom.xml" rel="self"></link><id>https://jbm.io/</id><updated>2024-07-06T14:10:00-04:00</updated><entry><title>Getting paperclipped: Exploring AI-assisted coding</title><link href="https://jbm.io/2024/07/paperclipped.html" rel="alternate"></link><published>2024-07-06T14:10:00-04:00</published><updated>2024-07-06T14:10:00-04:00</updated><author><name>John Mastro</name></author><id>tag:jbm.io,2024-07-06:/2024/07/paperclipped.html</id><summary type="html">&lt;p&gt;It&amp;rsquo;s been just over 6 years since my last post here. A lot&lt;sup id="fnref:lot"&gt;&lt;a class="footnote-ref" href="#fn:lot"&gt;1&lt;/a&gt;&lt;/sup&gt; has happened
-in that time, but one thing that did not happen was me continuing to work on
-&lt;a href="/sky.html"&gt;Sky&lt;/a&gt;. If you&amp;rsquo;ve been anxiously awaiting the hash function I promised
-at the end of the …&lt;/p&gt;</summary><content type="html">&lt;p&gt;It&amp;rsquo;s been just over 6 years since my last post here. A lot&lt;sup id="fnref:lot"&gt;&lt;a class="footnote-ref" href="#fn:lot"&gt;1&lt;/a&gt;&lt;/sup&gt; has happened
-in that time, but one thing that did not happen was me continuing to work on
-&lt;a href="/sky.html"&gt;Sky&lt;/a&gt;. If you&amp;rsquo;ve been anxiously awaiting the hash function I promised
-at the end of the last post, I&amp;rsquo;m sorry to say we&amp;rsquo;re not continuing that
-thread just now.&lt;/p&gt;
-&lt;p&gt;I did recently write a little Lisp VM in TypeScript (&lt;a href="https://github.com/johnmastro/bunny-lisp"&gt;bunny-lisp&lt;/a&gt;) as a
-conversation piece to present at work though, which was fun.&lt;/p&gt;
-&lt;p&gt;Anyway, what I want to do now is to start a series of posts on AI (or &amp;ldquo;AI&amp;rdquo; if you
-prefer - the generative models like OpenAI&amp;rsquo;s GPT series that are all the rage at 
-the moment). In particular, I want to try using them for AI-assisted coding.&lt;/p&gt;
-&lt;p&gt;I&amp;rsquo;ll be coming at this from the perspective of a curious beginner, because that&amp;rsquo;s
-what I am. And, at least to start, from a &lt;em&gt;user&lt;/em&gt; perspective - rather than an
-implementer - though I may dig deeper later.&lt;/p&gt;
-&lt;p&gt;What do I hope to get out of AI-assisted coding? Ideally, two things:&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;Productivity - if integrating AI into software development workflows can boost
-   your productivity, then it&amp;rsquo;s an important tool to have (and to learn
-   to use effectively) for obvious reasons.&lt;/li&gt;
-&lt;li&gt;Learning - I like learning new things (which is convenient, since it would be hard to
-   avoid in a career in software) and interacting with LLMs potentially provides an
-   interesting and more fluid way to do that than traditional means.&lt;/li&gt;
-&lt;/ol&gt;
-&lt;p&gt;I am, to be honest, a bit skeptical on both of these. But, the potential upside is
-too great not to invest more than the trivial amount I have so far&lt;sup id="fnref:sofar"&gt;&lt;a class="footnote-ref" href="#fn:sofar"&gt;2&lt;/a&gt;&lt;/sup&gt;.&lt;/p&gt;
-&lt;p&gt;Inspired by &lt;a href="https://www.visakanv.com/blog/do100things/"&gt;do 100 things&lt;/a&gt;, I&amp;rsquo;m going to try to keep these posts
-reasonably low-effort&lt;sup id="fnref:effort"&gt;&lt;a class="footnote-ref" href="#fn:effort"&gt;3&lt;/a&gt;&lt;/sup&gt;, aiming for &amp;ldquo;interesting&amp;rdquo; but not, for example,
-&amp;ldquo;polished&amp;rdquo; or &amp;ldquo;comprehensive&amp;rdquo;. With that in mind&amp;hellip; see you next time!&lt;/p&gt;
-&lt;div class="footnote"&gt;
-&lt;hr&gt;
-&lt;ol&gt;
-&lt;li id="fn:lot"&gt;
-&lt;p&gt;I moved across the country, I&amp;rsquo;ve slung bits at a couple hypergrowth startups,
-there was a global pandemic, I almost got married and then didn&amp;rsquo;t&amp;hellip; you
-know, life stuff.&amp;#160;&lt;a class="footnote-backref" href="#fnref:lot" title="Jump back to footnote 1 in the text"&gt;&amp;#8617;&amp;#xFE0E;&lt;/a&gt;&lt;/p&gt;
-&lt;/li&gt;
-&lt;li id="fn:sofar"&gt;
-&lt;p&gt;Not much more than enabling GitHub Copilot in my editor and deciding I actually
-kind of hate having slop appear in my editor while I&amp;rsquo;m trying to work.&amp;#160;&lt;a class="footnote-backref" href="#fnref:sofar" title="Jump back to footnote 2 in the text"&gt;&amp;#8617;&amp;#xFE0E;&lt;/a&gt;&lt;/p&gt;
-&lt;/li&gt;
-&lt;li id="fn:effort"&gt;
-&lt;p&gt;If I let my perfectionist side get traction here, that decreases the chances that
-I&amp;rsquo;ll continue the posts at all.&amp;#160;&lt;a class="footnote-backref" href="#fnref:effort" title="Jump back to footnote 3 in the text"&gt;&amp;#8617;&amp;#xFE0E;&lt;/a&gt;&lt;/p&gt;
-&lt;/li&gt;
-&lt;/ol&gt;
-&lt;/div&gt;</content><category term="07"></category></entry><entry><title>Sky 0.0.7: Basic equality</title><link href="https://jbm.io/2018/05/sky-0-0-7.html" rel="alternate"></link><published>2018-05-08T14:10:00-04:00</published><updated>2018-05-08T19:15:00-04:00</updated><author><name>John Mastro</name></author><id>tag:jbm.io,2018-05-08:/2018/05/sky-0-0-7.html</id><summary type="html">&lt;p&gt;This is part of a series of posts about writing a simple interpreter for a small
+<feed xmlns="http://www.w3.org/2005/Atom"><title>John Mastro</title><link href="https://jbm.io/" rel="alternate"></link><link href="https://jbm.io/atom.xml" rel="self"></link><id>https://jbm.io/</id><updated>2024-07-06T14:10:00-04:00</updated>
+<entry><title>Sky 0.0.7: Basic equality</title><link href="https://jbm.io/2018/05/sky-0-0-7.html" rel="alternate"></link><published>2018-05-08T14:10:00-04:00</published><updated>2018-05-08T19:15:00-04:00</updated><author><name>John Mastro</name></author><id>tag:jbm.io,2018-05-08:/2018/05/sky-0-0-7.html</id><summary type="html">&lt;p&gt;This is part of a series of posts about writing a simple interpreter for a small
 Lisp-like language. Please see &lt;a href="/sky.html"&gt;here&lt;/a&gt; for an overview of the series.&lt;/p&gt;
 &lt;p&gt;&lt;a href="/2018/04/sky-0-0-6.html"&gt;Last time&lt;/a&gt; we made all symbols readable. Now we&amp;rsquo;re going to start
 working towards a symbol table, and our first step is …&lt;/p&gt;</summary><content type="html">&lt;p&gt;This is part of a series of posts about writing a simple interpreter for a small
